@@ -125,15 +125,25 @@
             width: 100%;
         }
 
-        /* Estilos do seletor de idioma */
+        /* MUDANÇA: Novo estilo para seletor de idioma */
         .lang-option {
-            border: 2px solid transparent;
+            border: 2px solid var(--border-color);
             transition: all 0.2s;
-            background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent);
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+        }
+        .lang-option:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
         }
         .lang-option.active {
             border-color: var(--accent-color);
-            background-color: color-mix(in srgb, var(--accent-color) 20%, transparent);
+            background-color: var(--accent-color);
+            color: white;
+        }
+        body.high-contrast .lang-option.active {
+             background-color: var(--accent-color);
+             color: #000;
         }
         
         /* Esconde scrollbar */
@@ -173,18 +183,18 @@
                     <p class="text-base" style="color: var(--text-secondary);" data-i18n="mainSubtitle">Suas compras, organizadas.</p>
                 </div>
             </div>
-            <!-- MUDANÇA: Seletor de Idiomas com 3 botões -->
+            <!-- MUDANÇA: Seletor de Idiomas com novo estilo -->
             <div id="lang-switcher-container" class="flex items-center gap-2">
-                <button class="lang-option p-2 rounded-md flex items-center gap-2" data-lang="pt">
-                    <img src="https://flagcdn.com/br.svg" class="w-6 rounded-full">
+                <button class="lang-option p-2 rounded-lg flex items-center gap-2" data-lang="pt">
+                    <img src="https://flagcdn.com/br.svg" class="w-6 h-4">
                     <span class="text-sm font-semibold hidden sm:inline">PT-BR</span>
                 </button>
-                <button class="lang-option p-2 rounded-md flex items-center gap-2" data-lang="en">
-                    <img src="https://flagcdn.com/gb.svg" class="w-6 rounded-full">
+                <button class="lang-option p-2 rounded-lg flex items-center gap-2" data-lang="en">
+                    <img src="https://flagcdn.com/gb.svg" class="w-6 h-4">
                     <span class="text-sm font-semibold hidden sm:inline">ENG</span>
                 </button>
-                <button class="lang-option p-2 rounded-md flex items-center gap-2" data-lang="es">
-                    <img src="https://flagcdn.com/es.svg" class="w-6 rounded-full">
+                <button class="lang-option p-2 rounded-lg flex items-center gap-2" data-lang="es">
+                    <img src="https://flagcdn.com/es.svg" class="w-6 h-4">
                     <span class="text-sm font-semibold hidden sm:inline">ESP</span>
                 </button>
             </div>
@@ -931,3 +941,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+" from the immersive viewer.
+I want to change the currency symbol based on the language. For Portuguese (pt), it should be R$. For English (en) and Spanish (es), it should be
