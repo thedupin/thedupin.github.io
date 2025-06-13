@@ -88,8 +88,28 @@
         .btn-access { background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); font-size: 0.875rem; padding: 0.5rem 1rem; }
         .btn-access.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
         
-        .tab-button { background-color: transparent; border: none; color: var(--text-secondary); padding: 0.75rem 0.25rem; margin-right: 1.5rem; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
-        .tab-button.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
+        /* MUDANÇA: Novo estilo para os botões de navegação */
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px; /* pill shape */
+            font-weight: 600;
+            cursor: pointer;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-button:hover {
+            color: var(--text-headings);
+            background-color: color-mix(in srgb, var(--accent-color) 10%, transparent);
+        }
+        .tab-button.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        body.high-contrast .tab-button.active {
+            color: #000000;
+        }
         
         /* Modal Styles */
         .modal-container { transition: opacity 0.3s ease; }
@@ -166,7 +186,7 @@
             </div>
 
             <div class="section-card">
-                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Adicionar Item</h2>
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Adicionar Gasto</h2>
                 <div class="flex flex-col gap-4">
                     <select id="categoria-principal" class="input-field"></select>
                     <select id="categoria-secundaria" class="input-field hidden"></select>
@@ -175,12 +195,12 @@
                         <input type="number" id="quantidade-item" class="input-field" placeholder="Qtde." value="1" min="1">
                         <input type="number" id="preco-item" class="input-field" placeholder="Preço Unit. (R$)" step="0.01">
                     </div>
-                    <button id="adicionar-btn" class="btn btn-primary"><i data-feather="plus" class="w-5 h-5"></i>Adicionar Item</button>
+                    <button id="adicionar-btn" class="btn btn-primary"><i data-feather="plus" class="w-5 h-5"></i>Adicionar Gasto</button>
                 </div>
             </div>
 
              <div class="section-card">
-                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Ações das Compras</h2>
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Ações dos Gastos</h2>
                  <div class="grid grid-cols-2 gap-4">
                     <button id="exportar-btn" class="btn btn-secondary"><i data-feather="download" class="w-4 h-4"></i>Exportar</button>
                     <button id="importar-btn" class="btn btn-secondary"><i data-feather="upload" class="w-4 h-4"></i>Importar</button>
@@ -192,10 +212,13 @@
         <!-- Conteúdo Principal -->
         <main class="lg:w-2/3 xl:w-3/4 mt-8 lg:mt-0">
             <div class="section-card">
-                <div class="flex border-b mb-4" style="border-color: var(--border-color);" id="main-nav">
-                    <button id="tab-lista" class="tab-button active">Lista de Compras</button>
-                    <button id="tab-analise" class="tab-button">Análise de Gastos</button>
-                    <button id="tab-estoque" class="tab-button">O que Comprar?</button>
+                <div class="p-2 rounded-full mb-4" style="background-color: var(--bg-secondary);" id="main-nav">
+                    <div class="flex items-center justify-start gap-2">
+                        <!-- MUDANÇA: Nomes das abas atualizados -->
+                        <button id="tab-lista" class="tab-button active">Lista de Gastos</button>
+                        <button id="tab-analise" class="tab-button">Análise de Gastos</button>
+                        <button id="tab-estoque" class="tab-button">Lista de Compras</button>
+                    </div>
                 </div>
                 <div class="min-h-[60vh]">
                     <div id="view-lista"><div id="lista-itens-container" class="flex flex-col gap-3"></div></div>
@@ -203,10 +226,10 @@
                          <h3 class="text-lg font-semibold mb-4" style="color: var(--text-headings);">Gastos por Categoria</h3>
                          <div id="analise-container" class="flex flex-col gap-4"></div>
                     </div>
-                    <!-- Nova Aba de Estoque -->
+                    <!-- Aba de Estoque / Lista de Compras -->
                     <div id="view-estoque" class="hidden">
                          <div id="stock-actions" class="flex justify-between items-center mb-4">
-                             <h3 class="text-lg font-semibold" style="color: var(--text-headings);">Controle de Despensa</h3>
+                             <h3 class="text-lg font-semibold" style="color: var(--text-headings);">Planejar Lista de Compras</h3>
                              <div class="flex gap-2">
                                 <button id="stock-print-btn" class="btn btn-secondary p-2"><i data-feather="printer" class="w-5 h-5"></i></button>
                                 <button id="stock-export-btn" class="btn btn-secondary p-2"><i data-feather="download" class="w-5 h-5"></i></button>
@@ -268,7 +291,8 @@
         <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
             <div class="flex flex-col items-center text-center">
                 <i data-feather="archive" class="w-16 h-16 mb-4 text-green-500"></i>
-                <h2 class="text-2xl font-bold mb-3" style="color: var(--text-headings);">Planeje suas Compras!</h2>
+                <!-- MUDANÇA: Título do modal atualizado -->
+                <h2 class="text-2xl font-bold mb-3" style="color: var(--text-headings);">Planeje sua Lista de Compras!</h2>
                 <p class="mb-6" style="color: var(--text-secondary);">Use esta aba para controlar o que você tem em casa e saber exatamente o que precisa comprar. Preencha as colunas "Tenho" e "Ideal" para cada item e nós calculamos o resto!</p>
                 <button id="stock-modal-close-btn" class="btn btn-primary w-full">Entendi!</button>
             </div>
@@ -317,7 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
     const deleteCancelBtn = document.getElementById('delete-cancel-btn');
     
-    // --- ELEMENTOS DA NOVA ABA DE ESTOQUE ---
+    // --- ELEMENTOS DA ABA DE ESTOQUE ---
     const tabListaBtn = document.getElementById('tab-lista');
     const tabAnaliseBtn = document.getElementById('tab-analise');
     const tabEstoqueBtn = document.getElementById('tab-estoque');
@@ -437,7 +461,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderizarLista() {
         listaItensContainer.innerHTML = '';
         if (listaDeCompras.length === 0) {
-            listaItensContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="shopping-bag" class="w-16 h-16"></i><p>Sua lista de compras está vazia.</p></div>`;
+            listaItensContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="shopping-bag" class="w-16 h-16"></i><p>Sua lista de gastos está vazia.</p></div>`;
             return;
         }
         const frag = document.createDocumentFragment();
@@ -468,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderizarAnalise() {
         analiseContainer.innerHTML = '';
         if (listaDeCompras.length === 0) {
-            analiseContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="bar-chart-2" class="w-16 h-16"></i><p>Adicione itens para ver a análise.</p></div>`;
+            analiseContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="bar-chart-2" class="w-16 h-16"></i><p>Adicione gastos para ver a análise.</p></div>`;
             return;
         }
         const gastosPorCategoria = listaDeCompras.reduce((acc, item) => {
@@ -612,7 +636,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNÇÕES DE IMPORT/EXPORT ---
     function exportarParaCSV(data, filename) {
-        if (data.length === 0) { alert('Não há dados para exportar.'); return; }
+        let isStock = filename.includes('estoque');
+        if (!isStock && data.length === 0) { alert('Não há dados para exportar.'); return; }
+        if (isStock && Object.keys(data).length === 0) { alert('Não há dados para exportar.'); return; }
         
         let headers, rows;
 
@@ -714,7 +740,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    exportarBtn.addEventListener('click', () => exportarParaCSV(listaDeCompras, `compras_${new Date().toISOString().split('T')[0]}.csv`));
+    exportarBtn.addEventListener('click', () => exportarParaCSV(listaDeCompras, `gastos_${new Date().toISOString().split('T')[0]}.csv`));
     importarBtn.addEventListener('click', () => importarInput.click());
     importarInput.addEventListener('change', processarImportacaoCompras);
     
@@ -761,4 +787,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 </body>
-</html>
+</ht
