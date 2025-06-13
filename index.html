@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Controle de Supermercado</title>
+    <title>Meu Controle de Mercado</title>
     
     <!-- Tailwind CSS para um design moderno e responsivo -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -92,30 +92,44 @@
         .tab-button.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
         
         /* Modal Styles */
-        .modal-container {
-            transition: opacity 0.3s ease;
-        }
-        .modal-content {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-        .modal-container.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .modal-container.visible .modal-content {
-            transform: scale(1);
-            opacity: 1;
+        .modal-container { transition: opacity 0.3s ease; }
+        .modal-content { transition: transform 0.3s ease, opacity 0.3s ease; }
+        .modal-container.visible { opacity: 1; pointer-events: auto; }
+        .modal-container.visible .modal-content { transform: scale(1); opacity: 1; }
+        
+        /* Estilos da tabela de estoque */
+        .stock-input {
+            width: 80px;
+            text-align: center;
         }
         
         /* Esconde scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        @media print {
+            body {
+                background-image: none !important;
+            }
+            aside, footer, #header, #main-nav, #stock-actions {
+                display: none !important;
+            }
+            main {
+                width: 100% !important;
+                margin-top: 0 !important;
+            }
+            .section-card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                background-color: white !important;
+            }
+        }
     </style>
 </head>
 <body class="p-4 sm:p-6 lg:p-8">
 
     <!-- Header Principal -->
-    <header class="max-w-7xl mx-auto mb-8">
+    <header class="max-w-7xl mx-auto mb-8" id="header">
         <div class="section-card flex justify-between items-center p-4">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center shrink-0">
@@ -166,7 +180,7 @@
             </div>
 
              <div class="section-card">
-                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Ações</h2>
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Ações das Compras</h2>
                  <div class="grid grid-cols-2 gap-4">
                     <button id="exportar-btn" class="btn btn-secondary"><i data-feather="download" class="w-4 h-4"></i>Exportar</button>
                     <button id="importar-btn" class="btn btn-secondary"><i data-feather="upload" class="w-4 h-4"></i>Importar</button>
@@ -178,15 +192,43 @@
         <!-- Conteúdo Principal -->
         <main class="lg:w-2/3 xl:w-3/4 mt-8 lg:mt-0">
             <div class="section-card">
-                <div class="flex border-b mb-4" style="border-color: var(--border-color);">
+                <div class="flex border-b mb-4" style="border-color: var(--border-color);" id="main-nav">
                     <button id="tab-lista" class="tab-button active">Lista de Compras</button>
                     <button id="tab-analise" class="tab-button">Análise de Gastos</button>
+                    <button id="tab-estoque" class="tab-button">O que Comprar?</button>
                 </div>
                 <div class="min-h-[60vh]">
                     <div id="view-lista"><div id="lista-itens-container" class="flex flex-col gap-3"></div></div>
                     <div id="view-analise" class="hidden">
                          <h3 class="text-lg font-semibold mb-4" style="color: var(--text-headings);">Gastos por Categoria</h3>
                          <div id="analise-container" class="flex flex-col gap-4"></div>
+                    </div>
+                    <!-- Nova Aba de Estoque -->
+                    <div id="view-estoque" class="hidden">
+                         <div id="stock-actions" class="flex justify-between items-center mb-4">
+                             <h3 class="text-lg font-semibold" style="color: var(--text-headings);">Controle de Despensa</h3>
+                             <div class="flex gap-2">
+                                <button id="stock-print-btn" class="btn btn-secondary p-2"><i data-feather="printer" class="w-5 h-5"></i></button>
+                                <button id="stock-export-btn" class="btn btn-secondary p-2"><i data-feather="download" class="w-5 h-5"></i></button>
+                                <button id="stock-import-btn" class="btn btn-secondary p-2"><i data-feather="upload" class="w-5 h-5"></i></button>
+                                <input type="file" id="stock-import-input" class="hidden" accept=".csv">
+                             </div>
+                         </div>
+                         <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead class="border-b" style="border-color: var(--border-color);">
+                                    <tr>
+                                        <th class="p-2 font-semibold">Produto</th>
+                                        <th class="p-2 font-semibold text-center">Tenho</th>
+                                        <th class="p-2 font-semibold text-center">Ideal</th>
+                                        <th class="p-2 font-semibold text-center">Comprar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stock-table-body">
+                                    <!-- Linhas da tabela serão geradas aqui -->
+                                </tbody>
+                            </table>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -204,7 +246,7 @@
         </div>
     </footer>
     
-    <!-- MUDANÇA: Modal/Pop-up de Privacidade -->
+    <!-- Modais -->
     <div id="privacy-modal" class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none">
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm"></div>
         <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
@@ -221,7 +263,18 @@
         </div>
     </div>
     
-    <!-- Modal/Pop-up de Confirmação de Exclusão -->
+    <div id="stock-info-modal" class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
+            <div class="flex flex-col items-center text-center">
+                <i data-feather="archive" class="w-16 h-16 mb-4 text-green-500"></i>
+                <h2 class="text-2xl font-bold mb-3" style="color: var(--text-headings);">Planeje suas Compras!</h2>
+                <p class="mb-6" style="color: var(--text-secondary);">Use esta aba para controlar o que você tem em casa e saber exatamente o que precisa comprar. Preencha as colunas "Tenho" e "Ideal" para cada item e nós calculamos o resto!</p>
+                <button id="stock-modal-close-btn" class="btn btn-primary w-full">Entendi!</button>
+            </div>
+        </div>
+    </div>
+
     <div id="delete-confirm-modal" class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none">
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm"></div>
         <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
@@ -252,22 +305,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const adicionarBtn = document.getElementById('adicionar-btn');
     const listaItensContainer = document.getElementById('lista-itens-container');
     const analiseContainer = document.getElementById('analise-container');
-    const tabListaBtn = document.getElementById('tab-lista');
-    const tabAnaliseBtn = document.getElementById('tab-analise');
-    const viewLista = document.getElementById('view-lista');
-    const viewAnalise = document.getElementById('view-analise');
     const exportarBtn = document.getElementById('exportar-btn');
     const importarBtn = document.getElementById('importar-btn');
     const importarInput = document.getElementById('importar-input');
     const btnDarkMode = document.getElementById('btn-dark-mode');
     const btnHighContrast = document.getElementById('btn-high-contrast');
     const btnFontIncrease = document.getElementById('btn-font-increase');
-    // Elementos do Modal
     const privacyModal = document.getElementById('privacy-modal');
     const modalCloseBtn = document.getElementById('modal-close-btn');
     const deleteConfirmModal = document.getElementById('delete-confirm-modal');
     const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
     const deleteCancelBtn = document.getElementById('delete-cancel-btn');
+    
+    // --- ELEMENTOS DA NOVA ABA DE ESTOQUE ---
+    const tabListaBtn = document.getElementById('tab-lista');
+    const tabAnaliseBtn = document.getElementById('tab-analise');
+    const tabEstoqueBtn = document.getElementById('tab-estoque');
+    const viewLista = document.getElementById('view-lista');
+    const viewAnalise = document.getElementById('view-analise');
+    const viewEstoque = document.getElementById('view-estoque');
+    const stockTableBody = document.getElementById('stock-table-body');
+    const stockInfoModal = document.getElementById('stock-info-modal');
+    const stockModalCloseBtn = document.getElementById('stock-modal-close-btn');
+    const stockPrintBtn = document.getElementById('stock-print-btn');
+    const stockExportBtn = document.getElementById('stock-export-btn');
+    const stockImportBtn = document.getElementById('stock-import-btn');
+    const stockImportInput = document.getElementById('stock-import-input');
 
 
     // --- CATEGORIAS ---
@@ -288,14 +351,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- ESTADO DA APLICAÇÃO ---
     let listaDeCompras = [];
+    let stockData = {}; // Novo estado para os dados do estoque
     let budget = 0;
     let userSettings = {};
     let itemParaDeletar = null;
 
     // --- FUNÇÕES DE INICIALIZAÇÃO E RENDERIZAÇÃO ---
     function carregarDados() {
-        listaDeCompras = JSON.parse(localStorage.getItem('listaDeCompras_v6')) || [];
-        budget = parseFloat(localStorage.getItem('budget_v6')) || 0;
+        listaDeCompras = JSON.parse(localStorage.getItem('listaDeCompras_v7')) || [];
+        stockData = JSON.parse(localStorage.getItem('stockData_v1')) || {};
+        budget = parseFloat(localStorage.getItem('budget_v7')) || 0;
         userSettings = JSON.parse(localStorage.getItem('userSettings_v1')) || {};
         
         if (budget > 0) budgetInput.value = budget.toFixed(2);
@@ -307,6 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         aplicarConfiguracoes();
         popularCategoriasPrincipais();
         renderizarTudo();
+        renderizarTabelaEstoque();
     }
     
     function aplicarConfiguracoes() {
@@ -332,8 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function salvarDados() {
-        localStorage.setItem('listaDeCompras_v6', JSON.stringify(listaDeCompras));
-        localStorage.setItem('budget_v6', budget.toString());
+        localStorage.setItem('listaDeCompras_v7', JSON.stringify(listaDeCompras));
+        localStorage.setItem('stockData_v1', JSON.stringify(stockData));
+        localStorage.setItem('budget_v7', budget.toString());
         localStorage.setItem('userSettings_v1', JSON.stringify(userSettings));
     }
     
@@ -430,6 +497,69 @@ document.addEventListener('DOMContentLoaded', () => {
         analiseContainer.appendChild(frag);
     }
 
+    function renderizarTabelaEstoque() {
+        stockTableBody.innerHTML = '';
+        const frag = document.createDocumentFragment();
+
+        for (const catCode in categorias) {
+            const categoria = categorias[catCode];
+            const catHeader = document.createElement('tr');
+            catHeader.innerHTML = `<td colspan="4" class="p-2 font-bold text-lg" style="color: var(--text-headings); border-bottom: 2px solid; border-color: var(--accent-color);">${categoria.nome}</td>`;
+            frag.appendChild(catHeader);
+
+            for (const itemCode in categoria.itens) {
+                const fullCode = `${catCode}-${itemCode}`;
+                const itemName = categoria.itens[itemCode];
+                const itemData = stockData[fullCode] || { tenho: 0, ideal: 0 };
+                
+                const toBuy = Math.max(0, itemData.ideal - itemData.tenho);
+
+                const itemRow = document.createElement('tr');
+                itemRow.className = 'border-b';
+                itemRow.style.borderColor = 'var(--border-color)';
+                
+                let bgColor = 'transparent';
+                if (toBuy > 0) {
+                     bgColor = `color-mix(in srgb, var(--accent-color) 15%, transparent)`;
+                }
+
+                itemRow.innerHTML = `
+                    <td class="p-2">${itemName}</td>
+                    <td class="p-2 text-center">
+                        <input type="number" min="0" value="${itemData.tenho}" data-code="${fullCode}" data-type="tenho" class="input-field stock-input">
+                    </td>
+                    <td class="p-2 text-center">
+                        <input type="number" min="0" value="${itemData.ideal}" data-code="${fullCode}" data-type="ideal" class="input-field stock-input">
+                    </td>
+                    <td class="p-2 text-center font-bold" style="background-color: ${bgColor};">
+                        <span data-code="${fullCode}-tobuy">${toBuy}</span>
+                    </td>
+                `;
+                frag.appendChild(itemRow);
+            }
+        }
+        stockTableBody.appendChild(frag);
+    }
+    
+    function atualizarTabelaEstoque(code) {
+        const tenho = parseFloat(document.querySelector(`.stock-input[data-code="${code}"][data-type="tenho"]`).value) || 0;
+        const ideal = parseFloat(document.querySelector(`.stock-input[data-code="${code}"][data-type="ideal"]`).value) || 0;
+        const toBuyEl = document.querySelector(`span[data-code="${code}-tobuy"]`);
+        const toBuy = Math.max(0, ideal - tenho);
+        toBuyEl.textContent = toBuy;
+        
+        const row = toBuyEl.closest('tr');
+        if (toBuy > 0) {
+            row.querySelector('td:last-child').style.backgroundColor = `color-mix(in srgb, var(--accent-color) 15%, transparent)`;
+        } else {
+            row.querySelector('td:last-child').style.backgroundColor = 'transparent';
+        }
+
+        stockData[code] = { tenho, ideal };
+        salvarDados();
+    }
+
+
     function atualizarTotais() {
         const total = listaDeCompras.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
         totalGastoEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
@@ -444,22 +574,22 @@ document.addEventListener('DOMContentLoaded', () => {
     function adicionarItem() {
         const quantidade = parseInt(quantidadeInput.value) || 1;
         const preco = parseFloat(precoInput.value);
-        if (isNaN(preco) || preco <= 0) { showModal(privacyModal, {title: "Erro", message: "Por favor, insira um preço válido."}); return; }
+        if (isNaN(preco) || preco <= 0) { alert('Por favor, insira um preço válido.'); return; }
         const catPrincipalCod = catPrincipalSelect.value;
-        if (!catPrincipalCod) { showModal(privacyModal, {title: "Atenção", message: "Selecione uma categoria principal."}); return; }
+        if (!catPrincipalCod) { alert('Selecione uma categoria principal.'); return; }
         const catSecundariaCod = catSecundariaSelect.value;
         const outroNome = outroItemInput.value.trim();
         let nomeItem, codigoFinal;
         if (catPrincipalCod === 'OUT') {
-            if (!outroNome) { showModal(privacyModal, {title: "Atenção", message: "Especifique o nome do item."}); return; }
+            if (!outroNome) { alert('Especifique o nome do item.'); return; }
             nomeItem = outroNome; codigoFinal = 'OUT-GEN';
         } else if (catSecundariaCod === 'OUT') {
-            if (!outroNome) { showModal(privacyModal, {title: "Atenção", message: "Especifique o nome do item."}); return; }
+            if (!outroNome) { alert('Especifique o nome do item.'); return; }
             nomeItem = outroNome; codigoFinal = `${catPrincipalCod}-OUT`;
         } else if(catSecundariaCod) {
             nomeItem = categorias[catPrincipalCod].itens[catSecundariaCod];
             codigoFinal = `${catPrincipalCod}-${catSecundariaCod}`;
-        } else { showModal(privacyModal, {title: "Atenção", message: "Selecione um item ou especifique um novo."}); return; }
+        } else { alert('Selecione um item ou especifique um novo.'); return; }
         listaDeCompras.push({ id: Date.now(), codigo: codigoFinal, nome: nomeItem, preco: preco, quantidade: quantidade });
         precoInput.value = ''; outroItemInput.value = ''; quantidadeInput.value = '1'; catPrincipalSelect.value = '';
         popularCategoriasSecundarias(); renderizarTudo(); salvarDados();
@@ -481,18 +611,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- FUNÇÕES DE IMPORT/EXPORT ---
-    function exportarParaCSV() {
-        if (listaDeCompras.length === 0) { alert('Não há dados para exportar.'); return; }
-        const headers = 'ID,Codigo,Nome,PrecoUnitario,Quantidade,Data\n';
-        const rows = listaDeCompras.map(item => `${item.id},${item.codigo},"${item.nome.replace(/"/g, '""')}",${item.preco},${item.quantidade},${new Date(item.id).toISOString()}`).join('\n');
+    function exportarParaCSV(data, filename) {
+        if (data.length === 0) { alert('Não há dados para exportar.'); return; }
+        
+        let headers, rows;
+
+        if (filename.includes('compras')) {
+            headers = 'ID,Codigo,Nome,PrecoUnitario,Quantidade,Data\n';
+            rows = data.map(item => `${item.id},${item.codigo},"${item.nome.replace(/"/g, '""')}",${item.preco},${item.quantidade},${new Date(item.id).toISOString()}`).join('\n');
+        } else { // Estoque
+            headers = 'Codigo,Tenho,Ideal\n';
+            rows = Object.entries(data).map(([code, values]) => `${code},${values.tenho},${values.ideal}`).join('\n');
+        }
+
         const csvContent = "\uFEFF" + headers + rows;
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob); link.download = `compras_${new Date().toISOString().split('T')[0]}.csv`;
+        link.href = URL.createObjectURL(blob); link.download = filename;
         document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
     
-    function processarImportacao(event) {
+    function processarImportacaoCompras(event) {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
@@ -514,6 +653,36 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.readAsText(file); importarInput.value = '';
     }
 
+    function processarImportacaoEstoque(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const rows = e.target.result.split('\n').slice(1);
+                const newStockData = {};
+                rows.filter(row => row.trim() !== '').forEach(row => {
+                    const [code, tenho, ideal] = row.split(',');
+                    if (code) {
+                        newStockData[code] = {
+                            tenho: parseFloat(tenho) || 0,
+                            ideal: parseFloat(ideal) || 0
+                        };
+                    }
+                });
+                stockData = newStockData;
+                renderizarTabelaEstoque();
+                salvarDados();
+                alert('Dados de estoque importados com sucesso!');
+            } catch (error) {
+                alert('Ocorreu um erro ao importar o arquivo de estoque.');
+            }
+        };
+        reader.readAsText(file);
+        stockImportInput.value = '';
+    }
+
+
     // --- EVENT LISTENERS ---
     budgetInput.addEventListener('change', () => { budget = parseFloat(budgetInput.value) || 0; atualizarTotais(); salvarDados(); });
     catPrincipalSelect.addEventListener('change', popularCategoriasSecundarias);
@@ -528,11 +697,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    tabListaBtn.addEventListener('click', () => { tabListaBtn.classList.add('active'); tabAnaliseBtn.classList.remove('active'); viewLista.classList.remove('hidden'); viewAnalise.classList.add('hidden'); });
-    tabAnaliseBtn.addEventListener('click', () => { tabAnaliseBtn.classList.add('active'); tabListaBtn.classList.remove('active'); viewAnalise.classList.remove('hidden'); viewLista.classList.add('hidden'); });
-    exportarBtn.addEventListener('click', exportarParaCSV);
+    // Listeners das Abas
+    const tabs = [tabListaBtn, tabAnaliseBtn, tabEstoqueBtn];
+    const views = [viewLista, viewAnalise, viewEstoque];
+    tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            views.forEach(v => v.classList.add('hidden'));
+            tab.classList.add('active');
+            views[index].classList.remove('hidden');
+
+            if (tab === tabEstoqueBtn && !sessionStorage.getItem('stockInfoShown')) {
+                showModal(stockInfoModal);
+                sessionStorage.setItem('stockInfoShown', 'true');
+            }
+        });
+    });
+
+    exportarBtn.addEventListener('click', () => exportarParaCSV(listaDeCompras, `compras_${new Date().toISOString().split('T')[0]}.csv`));
     importarBtn.addEventListener('click', () => importarInput.click());
-    importarInput.addEventListener('change', processarImportacao);
+    importarInput.addEventListener('change', processarImportacaoCompras);
     
     // Listeners de Acessibilidade
     btnDarkMode.addEventListener('click', () => { userSettings.theme = userSettings.theme === 'dark' ? 'light' : 'dark'; aplicarConfiguracoes(); salvarDados(); });
@@ -544,6 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hideModal(privacyModal);
         localStorage.setItem('privacyNoticeShown_v1', 'true');
     });
+    stockModalCloseBtn.addEventListener('click', () => hideModal(stockInfoModal));
     deleteCancelBtn.addEventListener('click', () => {
         hideModal(deleteConfirmModal);
         itemParaDeletar = null;
@@ -555,6 +740,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         hideModal(deleteConfirmModal);
     });
+    
+    // Listeners do Estoque
+    stockTableBody.addEventListener('input', (e) => {
+        if (e.target.classList.contains('stock-input')) {
+            const code = e.target.dataset.code;
+            atualizarTabelaEstoque(code);
+        }
+    });
+
+    stockPrintBtn.addEventListener('click', () => window.print());
+    stockExportBtn.addEventListener('click', () => exportarParaCSV(stockData, `estoque_${new Date().toISOString().split('T')[0]}.csv`));
+    stockImportBtn.addEventListener('click', () => stockImportInput.click());
+    stockImportInput.addEventListener('change', processarImportacaoEstoque);
+
 
     // --- CARREGAMENTO INICIAL ---
     carregarDados();
