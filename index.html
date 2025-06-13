@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Controle de Supermercado</title>
+    
+    <!-- Tailwind CSS para um design moderno e responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts para uma tipografia limpa -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Biblioteca de Ícones (Feather Icons) -->
+    <script src="https://unpkg.com/feather-icons"></script>
+    
+    <style>
+        /* Estilos base e de temas */
+        :root {
+            --bg-primary: #f8fafc; /* bg-slate-50 */
+            --bg-secondary: #f1f5f9; /* bg-slate-100 */
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --text-primary: #334155; /* text-slate-700 */
+            --text-secondary: #64748b; /* text-slate-500 */
+            --text-headings: #1e293b; /* text-slate-800 */
+            --border-color: #cbd5e1; /* border-slate-300 */
+            --accent-color: #16a34a;
+            --accent-hover: #15803d;
+            --danger-color: #dc2626;
+            --danger-hover: #b91c1c;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            background-image: url('https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Tema Escuro */
+        body.dark-mode {
+            background-image: none;
+            --bg-primary: #000000; 
+            --bg-secondary: #1e293b; /* slate-800 */
+            --bg-card: rgba(15, 23, 42, 0.8); /* slate-900 com alpha */
+            --text-primary: #cbd5e1; /* slate-300 */
+            --text-secondary: #94a3b8; /* slate-400 */
+            --text-headings: #f1f5f9; /* slate-100 */
+            --border-color: #475569; /* slate-600 */
+        }
+
+        /* Tema Alto Contraste */
+        body.high-contrast {
+            background-image: none;
+            --bg-primary: #000000;
+            --bg-secondary: #000000;
+            --bg-card: #000000;
+            --text-primary: #FFFFFF;
+            --text-secondary: #FFFFFF;
+            --text-headings: #FFFFFF;
+            --border-color: #FFFFFF;
+            --accent-color: #FFFF00; /* Amarelo para destaque */
+            --accent-hover: #DDDD00;
+        }
+        body.high-contrast * { border-width: 2px !important; border-color: var(--border-color) !important; }
+        body.high-contrast .btn-primary { background-color: #FFFFFF; color: #000000; border-color: #000000 !important; }
+        body.high-contrast .btn-primary:hover { background-color: #E0E0E0; }
+
+        /* Aumento de Fonte */
+        body.font-large { font-size: 112.5%; /* 18px base */ }
+
+        .section-card { background-color: var(--bg-card); color: var(--text-primary); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.1); transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        .input-field { background-color: var(--bg-primary); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 0.5rem; padding: 0.75rem 1rem; width: 100%; transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s; }
+        .input-field:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-color) 20%, transparent); }
+        .btn { padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; color: white; cursor: pointer; transition: background-color 0.2s, border-color 0.2s, color 0.2s; border: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
+        .btn-primary { background-color: var(--accent-color); }
+        .btn-primary:hover { background-color: var(--accent-hover); }
+        .btn-danger { background-color: var(--danger-color); }
+        .btn-danger:hover { background-color: var(--danger-hover); }
+        .btn-secondary { background-color: var(--text-headings); color: var(--bg-primary); }
+        .btn-secondary:hover { opacity: 0.8; }
+        .btn-access { background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); font-size: 0.875rem; padding: 0.5rem 1rem; }
+        .btn-access.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
+        
+        .tab-button { background-color: transparent; border: none; color: var(--text-secondary); padding: 0.75rem 0.25rem; margin-right: 1.5rem; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
+        .tab-button.active { color: var(--accent-color); border-bottom-color: var(--accent-color); }
+        
+        /* Modal Styles */
+        .modal-container {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .modal-container.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-container.visible .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        /* Esconde scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="p-4 sm:p-6 lg:p-8">
+
+    <!-- Header Principal -->
+    <header class="max-w-7xl mx-auto mb-8">
+        <div class="section-card flex justify-between items-center p-4">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center shrink-0">
+                    <i data-feather="shopping-cart" class="text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold" style="color: var(--text-headings);">Meu Controle de Mercado</h1>
+                    <p class="text-base" style="color: var(--text-secondary);">Suas compras, organizadas.</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto lg:flex lg:gap-8">
+        <aside class="lg:w-1/3 xl:w-1/4 lg:sticky top-8 self-start flex flex-col gap-6">
+            <div class="section-card">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Orçamento</h2>
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <label for="budget" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Definir Orçamento (R$)</label>
+                        <input type="number" id="budget" class="input-field" placeholder="Ex: 800.00" step="0.01">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div class="p-3 rounded-lg" style="background-color: var(--bg-secondary);">
+                            <span class="text-sm block" style="color: var(--text-secondary);">Total Gasto</span>
+                            <span id="total-gasto" class="text-xl font-bold" style="color: var(--text-headings);">R$ 0,00</span>
+                        </div>
+                        <div class="p-3 rounded-lg" style="background-color: var(--bg-secondary);">
+                            <span class="text-sm block" style="color: var(--text-secondary);">Saldo</span>
+                            <span id="saldo-restante" class="text-xl font-bold text-green-600">R$ 0,00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Adicionar Item</h2>
+                <div class="flex flex-col gap-4">
+                    <select id="categoria-principal" class="input-field"></select>
+                    <select id="categoria-secundaria" class="input-field hidden"></select>
+                    <input type="text" id="outro-item-nome" class="input-field hidden" placeholder="Especifique o item">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="number" id="quantidade-item" class="input-field" placeholder="Qtde." value="1" min="1">
+                        <input type="number" id="preco-item" class="input-field" placeholder="Preço Unit. (R$)" step="0.01">
+                    </div>
+                    <button id="adicionar-btn" class="btn btn-primary"><i data-feather="plus" class="w-5 h-5"></i>Adicionar Item</button>
+                </div>
+            </div>
+
+             <div class="section-card">
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Ações</h2>
+                 <div class="grid grid-cols-2 gap-4">
+                    <button id="exportar-btn" class="btn btn-secondary"><i data-feather="download" class="w-4 h-4"></i>Exportar</button>
+                    <button id="importar-btn" class="btn btn-secondary"><i data-feather="upload" class="w-4 h-4"></i>Importar</button>
+                    <input type="file" id="importar-input" class="hidden" accept=".csv">
+                </div>
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <main class="lg:w-2/3 xl:w-3/4 mt-8 lg:mt-0">
+            <div class="section-card">
+                <div class="flex border-b mb-4" style="border-color: var(--border-color);">
+                    <button id="tab-lista" class="tab-button active">Lista de Compras</button>
+                    <button id="tab-analise" class="tab-button">Análise de Gastos</button>
+                </div>
+                <div class="min-h-[60vh]">
+                    <div id="view-lista"><div id="lista-itens-container" class="flex flex-col gap-3"></div></div>
+                    <div id="view-analise" class="hidden">
+                         <h3 class="text-lg font-semibold mb-4" style="color: var(--text-headings);">Gastos por Categoria</h3>
+                         <div id="analise-container" class="flex flex-col gap-4"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <footer class="max-w-7xl mx-auto mt-12">
+        <div class="section-card p-3">
+             <div class="flex items-center justify-center gap-2 sm:gap-4">
+                 <span class="text-sm font-semibold hidden sm:inline" style="color: var(--text-headings);">Acessibilidade:</span>
+                 <button id="btn-dark-mode" class="btn btn-access"><i data-feather="moon" class="w-4 h-4"></i><span class="hidden md:inline">Escuro</span></button>
+                 <button id="btn-high-contrast" class="btn btn-access"><i data-feather="sun" class="w-4 h-4"></i><span class="hidden md:inline">Contraste</span></button>
+                 <button id="btn-font-increase" class="btn btn-access"><i data-feather="zoom-in" class="w-4 h-4"></i><span class="hidden md:inline">Aumentar Fonte</span></button>
+             </div>
+        </div>
+    </footer>
+    
+    <!-- MUDANÇA: Modal/Pop-up de Privacidade -->
+    <div id="privacy-modal" class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
+            <div class="flex flex-col items-center text-center">
+                <i data-feather="shield" class="w-16 h-16 mb-4 text-green-500"></i>
+                <h2 class="text-2xl font-bold mb-3" style="color: var(--text-headings);">Sua Privacidade em Primeiro Lugar!</h2>
+                <p class="mb-6" style="color: var(--text-secondary);">Este site funciona 100% no seu navegador. <strong>Nenhum dado é coletado ou enviado para servidores.</strong></p>
+                <div class="text-left p-4 rounded-lg mb-6 border-l-4" style="background-color: color-mix(in srgb, var(--accent-color) 10%, transparent); border-color: var(--accent-color);">
+                     <p class="font-semibold" style="color: var(--text-headings);">Importante:</p>
+                     <p class="text-sm" style="color: var(--text-primary);">Como tudo é salvo localmente, lembre-se de <strong>exportar seus dados</strong> (botão "Exportar") para não perdê-los. Você pode importá-los de volta a qualquer momento.</p>
+                </div>
+                <button id="modal-close-btn" class="btn btn-primary w-full">Entendi, começar a usar!</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal/Pop-up de Confirmação de Exclusão -->
+    <div id="delete-confirm-modal" class="modal-container fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
+            <div class="text-center">
+                <i data-feather="alert-triangle" class="w-16 h-16 mb-4 text-red-500 mx-auto"></i>
+                <h2 class="text-xl font-bold mb-2" style="color: var(--text-headings);">Confirmar Exclusão</h2>
+                <p class="mb-6" style="color: var(--text-secondary);">Tem certeza que deseja remover este item? Esta ação não pode ser desfeita.</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="delete-cancel-btn" class="btn btn-secondary">Cancelar</button>
+                    <button id="delete-confirm-btn" class="btn btn-danger">Sim, remover</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- ELEMENTOS DO DOM ---
+    const budgetInput = document.getElementById('budget');
+    const totalGastoEl = document.getElementById('total-gasto');
+    const saldoRestanteEl = document.getElementById('saldo-restante');
+    const catPrincipalSelect = document.getElementById('categoria-principal');
+    const catSecundariaSelect = document.getElementById('categoria-secundaria');
+    const outroItemInput = document.getElementById('outro-item-nome');
+    const quantidadeInput = document.getElementById('quantidade-item');
+    const precoInput = document.getElementById('preco-item');
+    const adicionarBtn = document.getElementById('adicionar-btn');
+    const listaItensContainer = document.getElementById('lista-itens-container');
+    const analiseContainer = document.getElementById('analise-container');
+    const tabListaBtn = document.getElementById('tab-lista');
+    const tabAnaliseBtn = document.getElementById('tab-analise');
+    const viewLista = document.getElementById('view-lista');
+    const viewAnalise = document.getElementById('view-analise');
+    const exportarBtn = document.getElementById('exportar-btn');
+    const importarBtn = document.getElementById('importar-btn');
+    const importarInput = document.getElementById('importar-input');
+    const btnDarkMode = document.getElementById('btn-dark-mode');
+    const btnHighContrast = document.getElementById('btn-high-contrast');
+    const btnFontIncrease = document.getElementById('btn-font-increase');
+    // Elementos do Modal
+    const privacyModal = document.getElementById('privacy-modal');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+    const deleteConfirmBtn = document.getElementById('delete-confirm-btn');
+    const deleteCancelBtn = document.getElementById('delete-cancel-btn');
+
+
+    // --- CATEGORIAS ---
+    const categorias = {
+        'MER': { nome: 'Mercearia/Despensa', itens: { 'ARR': 'Arroz', 'FEJ': 'Feijão', 'MAC': 'Macarrão', 'OLE': 'Óleo', 'AZT': 'Azeite', 'VIN': 'Vinagre', 'SAL': 'Sal', 'ACU': 'Açúcar', 'FAR': 'Farinha de Trigo', 'FBA': 'Fubá', 'CAF': 'Café', 'ACH': 'Achocolatado', 'MTO': 'Molho de Tomate', 'MAI': 'Maionese', 'KET': 'Ketchup', 'MOS': 'Mostarda', 'CNS': 'Conservas (Milho, Ervilha)', 'PAL': 'Palmito', 'GEL': 'Gelatina', 'PUD': 'Pudim/Flan', 'CER': 'Cereal Matinal', 'ADO': 'Adoçante' } },
+        'PAD': { nome: 'Padaria', itens: { 'PAO': 'Pão de Forma', 'PFR': 'Pão Francês', 'BIS': 'Biscoito/Bolacha', 'TOR': 'Torrada', 'BOL': 'Bolo (pronto/mistura)', 'FER': 'Fermento', 'PQR': 'Pão de Queijo' } },
+        'ACO': { nome: 'Açougue (Carne Bovina/Suína)', itens: { 'BOV-MOI': 'Carne Moída', 'BOV-BIF': 'Bife', 'BOV-PIC': 'Picanha', 'BOV-ALC': 'Alcatra', 'BOV-COS': 'Costela Bovina', 'BOV-MUS': 'Músculo', 'SUI-LOM': 'Lombo Suíno', 'SUI-COS': 'Costela Suína', 'SUI-PER': 'Pernil', 'BAC': 'Bacon', 'LIN': 'Linguiça Toscana/Calabresa', 'SLS': 'Salsicha' } },
+        'AVE': { nome: 'Aves', itens: { 'FRA-PEI': 'Peito de Frango', 'FRA-FIL': 'Filé de Frango', 'FRA-COX': 'Coxa/Sobrecoxa', 'FRA-ASA': 'Asa/Asinha', 'FRA-INT': 'Frango Inteiro', 'FRA-PAS': 'Frango a Passarinho', 'OVO': 'Ovos' } },
+        'PEI': { nome: 'Peixaria', itens: { 'TIL': 'Filé de Tilápia', 'SAL': 'Salmão', 'MER': 'Merluza', 'CAM': 'Camarão', 'ATUM': 'Atum (Lata/Fresco)' } },
+        'FIA': { nome: 'Fiambreria', itens: { 'QJO-MUS': 'Queijo Mussarela', 'QJO-PRA': 'Queijo Prato', 'QJO-COA': 'Queijo Coalho', 'QJO-MIN': 'Queijo Minas', 'REQ': 'Requeijão', 'CCH': 'Cream Cheese', 'PRE': 'Presunto', 'PPU': 'Peito de Peru', 'SLM': 'Salame', 'MOR': 'Mortadela' } },
+        'LAT': { nome: 'Laticínios', itens: { 'LEI': 'Leite', 'IOG': 'Iogurte', 'MAN': 'Manteiga', 'MAR': 'Margarina', 'CRE': 'Creme de Leite', 'LCN': 'Leite Condensado' } },
+        'FVL': { nome: 'Hortifruti', itens: { 'ALF': 'Alface', 'RUC': 'Rúcula', 'COU': 'Couve', 'TOM': 'Tomate', 'CEB': 'Cebola', 'ALH': 'Alho', 'CEN': 'Cenoura', 'BAT': 'Batata', 'MDI': 'Mandioca', 'PIM': 'Pimentão', 'BAN': 'Banana', 'MCA': 'Maçã', 'LAR': 'Laranja', 'LIM': 'Limão', 'MAM': 'Mamão', 'UVA': 'Uva', 'MOR': 'Morango' } },
+        'BEB': { nome: 'Bebidas', itens: { 'AGM': 'Água Mineral', 'AGC': 'Água de Coco', 'REF': 'Refrigerante', 'SUC': 'Suco (Caixa/Pó)', 'IST': 'Isotônico', 'ENE': 'Energético', 'CER': 'Cerveja', 'VIN': 'Vinho' } },
+        'CNG': { nome: 'Congelados', itens: { 'PIZ': 'Pizza', 'LAS': 'Lasanha', 'HAM': 'Hambúrguer (caixa)', 'BFR': 'Batata Frita', 'LEG': 'Legumes Congelados', 'POL': 'Polpa de Fruta', 'SOR': 'Sorvete' } },
+        'LIM': { nome: 'Limpeza', itens: { 'SAP': 'Sabão em Pó/Líquido', 'AMA': 'Amaciante', 'DET': 'Detergente', 'AGS': 'Água Sanitária', 'DES': 'Desinfetante', 'MUL': 'Multiuso', 'ESP': 'Esponja de Aço/Sintética', 'SCL': 'Saco de Lixo', 'PPO': 'Pano de Prato/Chão' } },
+        'HIG': { nome: 'Higiene Pessoal', itens: { 'SAB': 'Sabonete', 'SHA': 'Shampoo', 'CND': 'Condicionador', 'PAS': 'Pasta de Dente', 'ESC': 'Escova de Dente', 'FIO': 'Fio Dental', 'DSD': 'Desodorante', 'PAP': 'Papel Higiênico', 'ABS': 'Absorvente' } },
+    };
+
+    // --- ESTADO DA APLICAÇÃO ---
+    let listaDeCompras = [];
+    let budget = 0;
+    let userSettings = {};
+    let itemParaDeletar = null;
+
+    // --- FUNÇÕES DE INICIALIZAÇÃO E RENDERIZAÇÃO ---
+    function carregarDados() {
+        listaDeCompras = JSON.parse(localStorage.getItem('listaDeCompras_v6')) || [];
+        budget = parseFloat(localStorage.getItem('budget_v6')) || 0;
+        userSettings = JSON.parse(localStorage.getItem('userSettings_v1')) || {};
+        
+        if (budget > 0) budgetInput.value = budget.toFixed(2);
+        
+        if (!localStorage.getItem('privacyNoticeShown_v1')) {
+            showModal(privacyModal);
+        }
+
+        aplicarConfiguracoes();
+        popularCategoriasPrincipais();
+        renderizarTudo();
+    }
+    
+    function aplicarConfiguracoes() {
+        document.body.classList.remove('dark-mode', 'high-contrast', 'font-large');
+        if(userSettings.theme === 'dark') {
+            document.body.classList.add('dark-mode');
+            btnDarkMode.classList.add('active');
+            btnHighContrast.classList.remove('active');
+        } else if (userSettings.theme === 'high-contrast') {
+            document.body.classList.add('high-contrast');
+            btnHighContrast.classList.add('active');
+            btnDarkMode.classList.remove('active');
+        } else {
+             btnDarkMode.classList.remove('active');
+             btnHighContrast.classList.remove('active');
+        }
+        if(userSettings.fontSize === 'large') {
+            document.body.classList.add('font-large');
+            btnFontIncrease.classList.add('active');
+        } else {
+            btnFontIncrease.classList.remove('active');
+        }
+    }
+
+    function salvarDados() {
+        localStorage.setItem('listaDeCompras_v6', JSON.stringify(listaDeCompras));
+        localStorage.setItem('budget_v6', budget.toString());
+        localStorage.setItem('userSettings_v1', JSON.stringify(userSettings));
+    }
+    
+    function renderizarTudo() {
+        renderizarLista();
+        renderizarAnalise();
+        atualizarTotais();
+        feather.replace();
+    }
+
+    function popularCategoriasPrincipais() {
+        catPrincipalSelect.innerHTML = '<option value="">Selecione uma categoria</option>';
+        Object.keys(categorias).forEach(codigo => catPrincipalSelect.add(new Option(categorias[codigo].nome, codigo)));
+        catPrincipalSelect.add(new Option('Outra Categoria', 'OUT'));
+    }
+
+    function popularCategoriasSecundarias() {
+        const catPrincipalCod = catPrincipalSelect.value;
+        catSecundariaSelect.innerHTML = '<option value="">Selecione o item</option>';
+        outroItemInput.classList.add('hidden');
+        if (catPrincipalCod && categorias[catPrincipalCod]) {
+            catSecundariaSelect.classList.remove('hidden');
+            const subcategorias = categorias[catPrincipalCod].itens;
+            Object.keys(subcategorias).forEach(cod => catSecundariaSelect.add(new Option(subcategorias[cod], cod)));
+            catSecundariaSelect.add(new Option('Outro item nesta categoria', 'OUT'));
+        } else if (catPrincipalCod === 'OUT') {
+            catSecundariaSelect.classList.add('hidden');
+            outroItemInput.classList.remove('hidden');
+        } else {
+             catSecundariaSelect.classList.add('hidden');
+        }
+    }
+
+    function renderizarLista() {
+        listaItensContainer.innerHTML = '';
+        if (listaDeCompras.length === 0) {
+            listaItensContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="shopping-bag" class="w-16 h-16"></i><p>Sua lista de compras está vazia.</p></div>`;
+            return;
+        }
+        const frag = document.createDocumentFragment();
+        listaDeCompras.slice().reverse().forEach(item => {
+            const totalItem = item.preco * item.quantidade;
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'flex items-center justify-between p-3 rounded-lg border';
+            itemDiv.style.backgroundColor = 'color-mix(in srgb, var(--bg-card) 60%, transparent)';
+            itemDiv.style.borderColor = 'color-mix(in srgb, var(--border-color) 50%, transparent)';
+            itemDiv.innerHTML = `
+                <div>
+                    <p class="font-semibold" style="color: var(--text-headings);">${item.nome}</p>
+                    <p class="text-sm" style="color: var(--text-secondary);">
+                        ${item.quantidade} x R$ ${item.preco.toFixed(2).replace('.', ',')}
+                    </p>
+                </div>
+                <div class="text-right flex items-center gap-4">
+                    <p class="font-semibold text-lg" style="color: var(--text-headings);">R$ ${totalItem.toFixed(2).replace('.', ',')}</p>
+                    <button data-id="${item.id}" class="btn-deletar p-2 rounded-full transition-colors" style="color: var(--text-secondary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>`;
+            frag.appendChild(itemDiv);
+        });
+        listaItensContainer.appendChild(frag);
+    }
+    
+    function renderizarAnalise() {
+        analiseContainer.innerHTML = '';
+        if (listaDeCompras.length === 0) {
+            analiseContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="bar-chart-2" class="w-16 h-16"></i><p>Adicione itens para ver a análise.</p></div>`;
+            return;
+        }
+        const gastosPorCategoria = listaDeCompras.reduce((acc, item) => {
+            const catCod = item.codigo.split('-')[0];
+            const nomeCat = categorias[catCod] ? categorias[catCod].nome : 'Outros';
+            if (!acc[nomeCat]) acc[nomeCat] = 0;
+            acc[nomeCat] += (item.preco * item.quantidade);
+            return acc;
+        }, {});
+        const sortedCategorias = Object.entries(gastosPorCategoria).sort(([, a], [, b]) => b - a);
+        const totalGlobal = listaDeCompras.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+        const frag = document.createDocumentFragment();
+        sortedCategorias.forEach(([nome, total]) => {
+            const percentual = totalGlobal > 0 ? (total / totalGlobal) * 100 : 0;
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-1">
+                    <span class="font-medium" style="color: var(--text-primary);">${nome}</span>
+                    <span class="font-semibold" style="color: var(--text-headings);">R$ ${total.toFixed(2).replace('.', ',')}</span>
+                </div>
+                <div class="w-full rounded-full h-2.5" style="background-color: var(--bg-secondary);">
+                    <div class="h-2.5 rounded-full" style="width: ${percentual.toFixed(2)}%; background-color: var(--accent-color);"></div>
+                </div>`;
+            frag.appendChild(div);
+        });
+        analiseContainer.appendChild(frag);
+    }
+
+    function atualizarTotais() {
+        const total = listaDeCompras.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+        totalGastoEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        const saldo = budget - total;
+        saldoRestanteEl.textContent = `R$ ${saldo.toFixed(2).replace('.', ',')}`;
+        saldoRestanteEl.style.color = saldo >= 0 ? '#16a34a' : '#ef4444';
+        if (document.body.classList.contains('high-contrast')) {
+             saldoRestanteEl.style.color = 'var(--text-primary)';
+        }
+    }
+    
+    function adicionarItem() {
+        const quantidade = parseInt(quantidadeInput.value) || 1;
+        const preco = parseFloat(precoInput.value);
+        if (isNaN(preco) || preco <= 0) { showModal(privacyModal, {title: "Erro", message: "Por favor, insira um preço válido."}); return; }
+        const catPrincipalCod = catPrincipalSelect.value;
+        if (!catPrincipalCod) { showModal(privacyModal, {title: "Atenção", message: "Selecione uma categoria principal."}); return; }
+        const catSecundariaCod = catSecundariaSelect.value;
+        const outroNome = outroItemInput.value.trim();
+        let nomeItem, codigoFinal;
+        if (catPrincipalCod === 'OUT') {
+            if (!outroNome) { showModal(privacyModal, {title: "Atenção", message: "Especifique o nome do item."}); return; }
+            nomeItem = outroNome; codigoFinal = 'OUT-GEN';
+        } else if (catSecundariaCod === 'OUT') {
+            if (!outroNome) { showModal(privacyModal, {title: "Atenção", message: "Especifique o nome do item."}); return; }
+            nomeItem = outroNome; codigoFinal = `${catPrincipalCod}-OUT`;
+        } else if(catSecundariaCod) {
+            nomeItem = categorias[catPrincipalCod].itens[catSecundariaCod];
+            codigoFinal = `${catPrincipalCod}-${catSecundariaCod}`;
+        } else { showModal(privacyModal, {title: "Atenção", message: "Selecione um item ou especifique um novo."}); return; }
+        listaDeCompras.push({ id: Date.now(), codigo: codigoFinal, nome: nomeItem, preco: preco, quantidade: quantidade });
+        precoInput.value = ''; outroItemInput.value = ''; quantidadeInput.value = '1'; catPrincipalSelect.value = '';
+        popularCategoriasSecundarias(); renderizarTudo(); salvarDados();
+    }
+    
+    function deletarItem(id) {
+        listaDeCompras = listaDeCompras.filter(item => item.id !== id);
+        renderizarTudo(); salvarDados();
+    }
+    
+    // --- FUNÇÕES DE MODAL ---
+    function showModal(modalElement) {
+        modalElement.classList.add('visible');
+        feather.replace();
+    }
+
+    function hideModal(modalElement) {
+        modalElement.classList.remove('visible');
+    }
+
+    // --- FUNÇÕES DE IMPORT/EXPORT ---
+    function exportarParaCSV() {
+        if (listaDeCompras.length === 0) { alert('Não há dados para exportar.'); return; }
+        const headers = 'ID,Codigo,Nome,PrecoUnitario,Quantidade,Data\n';
+        const rows = listaDeCompras.map(item => `${item.id},${item.codigo},"${item.nome.replace(/"/g, '""')}",${item.preco},${item.quantidade},${new Date(item.id).toISOString()}`).join('\n');
+        const csvContent = "\uFEFF" + headers + rows;
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob); link.download = `compras_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+    
+    function processarImportacao(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const rows = e.target.result.split('\n').slice(1);
+                const novosItens = rows.filter(row => row.trim() !== '').map(row => {
+                    const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g).map(col => col.replace(/"/g, ''));
+                    return { id: parseInt(cols[0]), codigo: cols[1], nome: cols[2], preco: parseFloat(cols[3]), quantidade: parseInt(cols[4]) || 1 };
+                });
+                if (confirm('Deseja substituir sua lista atual pela importada? Cancele para mesclar.')) listaDeCompras = novosItens;
+                else {
+                    listaDeCompras.push(...novosItens);
+                    listaDeCompras = listaDeCompras.filter((item, index, self) => index === self.findIndex((t) => (t.id === item.id)));
+                }
+                renderizarTudo(); salvarDados(); alert('Dados importados com sucesso!');
+            } catch (error) { alert('Ocorreu um erro ao importar o arquivo.'); }
+        };
+        reader.readAsText(file); importarInput.value = '';
+    }
+
+    // --- EVENT LISTENERS ---
+    budgetInput.addEventListener('change', () => { budget = parseFloat(budgetInput.value) || 0; atualizarTotais(); salvarDados(); });
+    catPrincipalSelect.addEventListener('change', popularCategoriasSecundarias);
+    catSecundariaSelect.addEventListener('change', () => outroItemInput.classList.toggle('hidden', catSecundariaSelect.value !== 'OUT'));
+    adicionarBtn.addEventListener('click', adicionarItem);
+    
+    listaItensContainer.addEventListener('click', (e) => {
+        const deleteButton = e.target.closest('.btn-deletar');
+        if (deleteButton) {
+            itemParaDeletar = parseInt(deleteButton.dataset.id);
+            showModal(deleteConfirmModal);
+        }
+    });
+
+    tabListaBtn.addEventListener('click', () => { tabListaBtn.classList.add('active'); tabAnaliseBtn.classList.remove('active'); viewLista.classList.remove('hidden'); viewAnalise.classList.add('hidden'); });
+    tabAnaliseBtn.addEventListener('click', () => { tabAnaliseBtn.classList.add('active'); tabListaBtn.classList.remove('active'); viewAnalise.classList.remove('hidden'); viewLista.classList.add('hidden'); });
+    exportarBtn.addEventListener('click', exportarParaCSV);
+    importarBtn.addEventListener('click', () => importarInput.click());
+    importarInput.addEventListener('change', processarImportacao);
+    
+    // Listeners de Acessibilidade
+    btnDarkMode.addEventListener('click', () => { userSettings.theme = userSettings.theme === 'dark' ? 'light' : 'dark'; aplicarConfiguracoes(); salvarDados(); });
+    btnHighContrast.addEventListener('click', () => { userSettings.theme = userSettings.theme === 'high-contrast' ? 'light' : 'high-contrast'; aplicarConfiguracoes(); salvarDados(); });
+    btnFontIncrease.addEventListener('click', () => { userSettings.fontSize = userSettings.fontSize === 'large' ? 'normal' : 'large'; aplicarConfiguracoes(); salvarDados(); });
+    
+    // Listeners do Modal
+    modalCloseBtn.addEventListener('click', () => {
+        hideModal(privacyModal);
+        localStorage.setItem('privacyNoticeShown_v1', 'true');
+    });
+    deleteCancelBtn.addEventListener('click', () => {
+        hideModal(deleteConfirmModal);
+        itemParaDeletar = null;
+    });
+    deleteConfirmBtn.addEventListener('click', () => {
+        if(itemParaDeletar !== null) {
+            deletarItem(itemParaDeletar);
+            itemParaDeletar = null;
+        }
+        hideModal(deleteConfirmModal);
+    });
+
+    // --- CARREGAMENTO INICIAL ---
+    carregarDados();
+});
+</script>
+
+</body>
+</html>
