@@ -88,7 +88,6 @@
         .btn-access { background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); font-size: 0.875rem; padding: 0.5rem 1rem; }
         .btn-access.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
         
-        /* Novo estilo para os botões de navegação */
         .tab-button {
             padding: 0.5rem 1rem;
             border-radius: 9999px; /* pill shape */
@@ -125,6 +124,17 @@
         .custom-stock-name-input {
             width: 100%;
         }
+
+        /* Estilos do seletor de idioma */
+        .lang-option {
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            background-color: color-mix(in srgb, var(--bg-secondary) 50%, transparent);
+        }
+        .lang-option.active {
+            border-color: var(--accent-color);
+            background-color: color-mix(in srgb, var(--accent-color) 20%, transparent);
+        }
         
         /* Esconde scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -155,14 +165,28 @@
     <header class="max-w-7xl mx-auto mb-8" id="header">
         <div class="section-card flex justify-between items-center p-4">
             <div class="flex items-center gap-4">
-                <!-- MUDANÇA: Novo estilo do ícone e ícone trocado -->
                 <div class="w-14 h-14 bg-green-500/10 backdrop-blur-sm border border-green-500/20 rounded-xl flex items-center justify-center shrink-0">
                     <i data-feather="shopping-bag" class="text-green-600 w-7 h-7"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold" style="color: var(--text-headings);">Meu Controle de Mercado</h1>
-                    <p class="text-base" style="color: var(--text-secondary);">Suas compras, organizadas.</p>
+                    <h1 class="text-2xl font-bold" style="color: var(--text-headings);" data-i18n="mainTitle">Meu Controle de Mercado</h1>
+                    <p class="text-base" style="color: var(--text-secondary);" data-i18n="mainSubtitle">Suas compras, organizadas.</p>
                 </div>
+            </div>
+            <!-- MUDANÇA: Seletor de Idiomas com 3 botões -->
+            <div id="lang-switcher-container" class="flex items-center gap-2">
+                <button class="lang-option p-2 rounded-md flex items-center gap-2" data-lang="pt">
+                    <img src="https://flagcdn.com/br.svg" class="w-6 rounded-full">
+                    <span class="text-sm font-semibold hidden sm:inline">PT-BR</span>
+                </button>
+                <button class="lang-option p-2 rounded-md flex items-center gap-2" data-lang="en">
+                    <img src="https://flagcdn.com/gb.svg" class="w-6 rounded-full">
+                    <span class="text-sm font-semibold hidden sm:inline">ENG</span>
+                </button>
+                <button class="lang-option p-2 rounded-md flex items-center gap-2" data-lang="es">
+                    <img src="https://flagcdn.com/es.svg" class="w-6 rounded-full">
+                    <span class="text-sm font-semibold hidden sm:inline">ESP</span>
+                </button>
             </div>
         </div>
     </header>
@@ -170,19 +194,19 @@
     <div class="max-w-7xl mx-auto lg:flex lg:gap-8">
         <aside class="lg:w-1/3 xl:w-1/4 lg:sticky top-8 self-start flex flex-col gap-6">
             <div class="section-card">
-                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Orçamento</h2>
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);" data-i18n="budgetTitle">Orçamento</h2>
                 <div class="flex flex-col gap-4">
                     <div>
-                        <label for="budget" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);">Definir Orçamento (R$)</label>
+                        <label for="budget" class="block text-sm font-medium mb-1" style="color: var(--text-secondary);" data-i18n="setBudgetLabel">Definir Orçamento (R$)</label>
                         <input type="number" id="budget" class="input-field" placeholder="Ex: 800.00" step="0.01">
                     </div>
                     <div class="grid grid-cols-2 gap-4 text-center">
                         <div class="p-3 rounded-lg" style="background-color: var(--bg-secondary);">
-                            <span class="text-sm block" style="color: var(--text-secondary);">Total Gasto</span>
+                            <span class="text-sm block" style="color: var(--text-secondary);" data-i18n="totalSpentLabel">Total Gasto</span>
                             <span id="total-gasto" class="text-xl font-bold" style="color: var(--text-headings);">R$ 0,00</span>
                         </div>
                         <div class="p-3 rounded-lg" style="background-color: var(--bg-secondary);">
-                            <span class="text-sm block" style="color: var(--text-secondary);">Saldo</span>
+                            <span class="text-sm block" style="color: var(--text-secondary);" data-i18n="balanceLabel">Saldo</span>
                             <span id="saldo-restante" class="text-xl font-bold text-green-600">R$ 0,00</span>
                         </div>
                     </div>
@@ -190,24 +214,24 @@
             </div>
 
             <div class="section-card">
-                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Adicionar Gasto</h2>
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);" data-i18n="addExpenseTitle">Adicionar Gasto</h2>
                 <div class="flex flex-col gap-4">
                     <select id="categoria-principal" class="input-field"></select>
                     <select id="categoria-secundaria" class="input-field hidden"></select>
-                    <input type="text" id="outro-item-nome" class="input-field hidden" placeholder="Especifique o item">
+                    <input type="text" id="outro-item-nome" class="input-field hidden" data-i18n-placeholder="specifyItemPlaceholder">
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="number" id="quantidade-item" class="input-field" placeholder="Qtde." value="1" min="1">
-                        <input type="number" id="preco-item" class="input-field" placeholder="Preço Unit. (R$)" step="0.01">
+                        <input type="number" id="quantidade-item" class="input-field" data-i18n-placeholder="quantityPlaceholder" value="1" min="1">
+                        <input type="number" id="preco-item" class="input-field" data-i18n-placeholder="unitPricePlaceholder" step="0.01">
                     </div>
-                    <button id="adicionar-btn" class="btn btn-primary"><i data-feather="plus" class="w-5 h-5"></i>Adicionar Gasto</button>
+                    <button id="adicionar-btn" class="btn btn-primary"><i data-feather="plus" class="w-5 h-5"></i><span data-i18n="addExpenseBtn">Adicionar Gasto</span></button>
                 </div>
             </div>
 
              <div class="section-card">
-                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);">Ações dos Gastos</h2>
+                <h2 class="text-xl font-semibold mb-4" style="color: var(--text-headings);" data-i18n="expensesActionsTitle">Ações dos Gastos</h2>
                  <div class="grid grid-cols-2 gap-4">
-                    <button id="exportar-btn" class="btn btn-secondary"><i data-feather="download" class="w-4 h-4"></i>Exportar</button>
-                    <button id="importar-btn" class="btn btn-secondary"><i data-feather="upload" class="w-4 h-4"></i>Importar</button>
+                    <button id="exportar-btn" class="btn btn-secondary"><i data-feather="download" class="w-4 h-4"></i><span data-i18n="exportBtn">Exportar</span></button>
+                    <button id="importar-btn" class="btn btn-secondary"><i data-feather="upload" class="w-4 h-4"></i><span data-i18n="importBtn">Importar</span></button>
                     <input type="file" id="importar-input" class="hidden" accept=".csv">
                 </div>
             </div>
@@ -218,20 +242,20 @@
             <div class="section-card">
                 <div class="p-2 rounded-full mb-4" style="background-color: var(--bg-secondary);" id="main-nav">
                     <div class="flex items-center justify-start gap-2">
-                        <button id="tab-lista" class="tab-button active">Lista de Gastos</button>
-                        <button id="tab-analise" class="tab-button">Análise de Gastos</button>
-                        <button id="tab-estoque" class="tab-button">Lista de Compras</button>
+                        <button id="tab-lista" class="tab-button active" data-i18n="expensesListTab">Lista de Gastos</button>
+                        <button id="tab-analise" class="tab-button" data-i18n="spendAnalysisTab">Análise de Gastos</button>
+                        <button id="tab-estoque" class="tab-button" data-i18n="shoppingListTab">Lista de Compras</button>
                     </div>
                 </div>
                 <div class="min-h-[60vh]">
                     <div id="view-lista"><div id="lista-itens-container" class="flex flex-col gap-3"></div></div>
                     <div id="view-analise" class="hidden">
-                         <h3 class="text-lg font-semibold mb-4" style="color: var(--text-headings);">Gastos por Categoria</h3>
+                         <h3 class="text-lg font-semibold mb-4" style="color: var(--text-headings);" data-i18n="spendAnalysisTitle">Gastos por Categoria</h3>
                          <div id="analise-container" class="flex flex-col gap-4"></div>
                     </div>
                     <div id="view-estoque" class="hidden">
                          <div id="stock-actions" class="flex justify-between items-center mb-4">
-                             <h3 class="text-lg font-semibold" style="color: var(--text-headings);">Planejar Lista de Compras</h3>
+                             <h3 class="text-lg font-semibold" style="color: var(--text-headings);" data-i18n="planShoppingListTitle">Planejar Lista de Compras</h3>
                              <div class="flex gap-2">
                                 <button id="stock-print-btn" class="btn btn-secondary p-2"><i data-feather="printer" class="w-5 h-5"></i></button>
                                 <button id="stock-export-btn" class="btn btn-secondary p-2"><i data-feather="download" class="w-5 h-5"></i></button>
@@ -243,10 +267,10 @@
                             <table class="w-full text-left">
                                 <thead class="border-b" style="border-color: var(--border-color);">
                                     <tr>
-                                        <th class="p-2 font-semibold">Produto</th>
-                                        <th class="p-2 font-semibold text-center">Tenho</th>
-                                        <th class="p-2 font-semibold text-center">Ideal</th>
-                                        <th class="p-2 font-semibold text-center">Comprar</th>
+                                        <th class="p-2 font-semibold" data-i18n="productColumn">Produto</th>
+                                        <th class="p-2 font-semibold text-center" data-i18n="haveColumn">Tenho</th>
+                                        <th class="p-2 font-semibold text-center" data-i18n="idealColumn">Ideal</th>
+                                        <th class="p-2 font-semibold text-center" data-i18n="buyColumn">Comprar</th>
                                     </tr>
                                 </thead>
                                 <tbody id="stock-table-body"></tbody>
@@ -261,10 +285,10 @@
     <footer class="max-w-7xl mx-auto mt-12">
         <div class="section-card p-3">
              <div class="flex items-center justify-center gap-2 sm:gap-4">
-                 <span class="text-sm font-semibold hidden sm:inline" style="color: var(--text-headings);">Acessibilidade:</span>
-                 <button id="btn-dark-mode" class="btn btn-access"><i data-feather="moon" class="w-4 h-4"></i><span class="hidden md:inline">Escuro</span></button>
-                 <button id="btn-high-contrast" class="btn btn-access"><i data-feather="sun" class="w-4 h-4"></i><span class="hidden md:inline">Contraste</span></button>
-                 <button id="btn-font-increase" class="btn btn-access"><i data-feather="zoom-in" class="w-4 h-4"></i><span class="hidden md:inline">Aumentar Fonte</span></button>
+                 <span class="text-sm font-semibold hidden sm:inline" style="color: var(--text-headings);" data-i18n="accessibilityTitle">Acessibilidade:</span>
+                 <button id="btn-dark-mode" class="btn btn-access"><i data-feather="moon" class="w-4 h-4"></i><span class="hidden md:inline" data-i18n="darkModeBtn">Escuro</span></button>
+                 <button id="btn-high-contrast" class="btn btn-access"><i data-feather="sun" class="w-4 h-4"></i><span class="hidden md:inline" data-i18n="contrastModeBtn">Contraste</span></button>
+                 <button id="btn-font-increase" class="btn btn-access"><i data-feather="zoom-in" class="w-4 h-4"></i><span class="hidden md:inline" data-i18n="increaseFontBtn">Aumentar Fonte</span></button>
              </div>
         </div>
     </footer>
@@ -275,13 +299,13 @@
         <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
             <div class="flex flex-col items-center text-center">
                 <i data-feather="shield" class="w-16 h-16 mb-4 text-green-500"></i>
-                <h2 class="text-2xl font-bold mb-3" style="color: var(--text-headings);">Sua Privacidade em Primeiro Lugar!</h2>
-                <p class="mb-6" style="color: var(--text-secondary);">Este site funciona 100% no seu navegador. <strong>Nenhum dado é coletado ou enviado para servidores.</strong></p>
+                <h2 class="text-2xl font-bold mb-3" style="color: var(--text-headings);" data-i18n="privacyModalTitle">Sua Privacidade em Primeiro Lugar!</h2>
+                <p class="mb-6" style="color: var(--text-secondary);" data-i18n="privacyModalDesc">Este site funciona 100% no seu navegador. <strong>Nenhum dado é coletado ou enviado para servidores.</strong></p>
                 <div class="text-left p-4 rounded-lg mb-6 border-l-4" style="background-color: color-mix(in srgb, var(--accent-color) 10%, transparent); border-color: var(--accent-color);">
-                     <p class="font-semibold" style="color: var(--text-headings);">Importante:</p>
-                     <p class="text-sm" style="color: var(--text-primary);">Como tudo é salvo localmente, lembre-se de <strong>exportar seus dados</strong> (botão "Exportar") para não perdê-los. Você pode importá-los de volta a qualquer momento.</p>
+                     <p class="font-semibold" style="color: var(--text-headings);" data-i18n="privacyModalImportant">Importante:</p>
+                     <p class="text-sm" style="color: var(--text-primary);" data-i18n="privacyModalImportantDesc">Como tudo é salvo localmente, lembre-se de <strong>exportar seus dados</strong> (botão "Exportar") para não perdê-los. Você pode importá-los de volta a qualquer momento.</p>
                 </div>
-                <button id="modal-close-btn" class="btn btn-primary w-full">Entendi, começar a usar!</button>
+                <button id="modal-close-btn" class="btn btn-primary w-full" data-i18n="privacyModalBtn">Entendi, começar a usar!</button>
             </div>
         </div>
     </div>
@@ -291,9 +315,9 @@
         <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
             <div class="flex flex-col items-center text-center">
                 <i data-feather="archive" class="w-16 h-16 mb-4 text-green-500"></i>
-                <h2 class="text-2xl font-bold mb-3" style="color: var(--text-headings);">Planeje sua Lista de Compras!</h2>
-                <p class="mb-6" style="color: var(--text-secondary);">Use esta aba para controlar o que você tem em casa e saber exatamente o que precisa comprar. Preencha as colunas "Tenho" e "Ideal" para cada item e nós calculamos o resto!</p>
-                <button id="stock-modal-close-btn" class="btn btn-primary w-full">Entendi!</button>
+                <h2 class="text-2xl font-bold mb-3" style="color: var(--text-headings);" data-i18n="stockModalTitle">Planeje sua Lista de Compras!</h2>
+                <p class="mb-6" style="color: var(--text-secondary);" data-i18n="stockModalDesc">Use esta aba para controlar o que você tem em casa e saber exatamente o que precisa comprar. Preencha as colunas "Tenho" e "Ideal" para cada item e nós calculamos o resto!</p>
+                <button id="stock-modal-close-btn" class="btn btn-primary w-full" data-i18n="stockModalBtn">Entendi!</button>
             </div>
         </div>
     </div>
@@ -303,11 +327,11 @@
         <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
             <div class="text-center">
                 <i data-feather="alert-triangle" class="w-16 h-16 mb-4 text-red-500 mx-auto"></i>
-                <h2 class="text-xl font-bold mb-2" style="color: var(--text-headings);">Confirmar Exclusão</h2>
-                <p class="mb-6" style="color: var(--text-secondary);">Tem certeza que deseja remover este item? Esta ação não pode ser desfeita.</p>
+                <h2 class="text-xl font-bold mb-2" style="color: var(--text-headings);" data-i18n="deleteModalTitle">Confirmar Exclusão</h2>
+                <p class="mb-6" style="color: var(--text-secondary);" data-i18n="deleteModalDesc">Tem certeza que deseja remover este item? Esta ação não pode ser desfeita.</p>
                 <div class="grid grid-cols-2 gap-4">
-                    <button id="delete-cancel-btn" class="btn btn-secondary">Cancelar</button>
-                    <button id="delete-confirm-btn" class="btn btn-danger">Sim, remover</button>
+                    <button id="delete-cancel-btn" class="btn btn-secondary" data-i18n="cancelBtn">Cancelar</button>
+                    <button id="delete-confirm-btn" class="btn btn-danger" data-i18n="confirmDeleteBtn">Sim, remover</button>
                 </div>
             </div>
         </div>
@@ -355,37 +379,132 @@ document.addEventListener('DOMContentLoaded', () => {
     const stockImportBtn = document.getElementById('stock-import-btn');
     const stockImportInput = document.getElementById('stock-import-input');
 
-
-    // --- CATEGORIAS ---
-    const categorias = {
-        'MER': { nome: 'Mercearia/Despensa', itens: { 'ARR': 'Arroz', 'FEJ': 'Feijão', 'MAC': 'Macarrão', 'OLE': 'Óleo', 'AZT': 'Azeite', 'VIN': 'Vinagre', 'SAL': 'Sal', 'ACU': 'Açúcar', 'FAR': 'Farinha de Trigo', 'FBA': 'Fubá', 'CAF': 'Café', 'ACH': 'Achocolatado', 'MTO': 'Molho de Tomate', 'MAI': 'Maionese', 'KET': 'Ketchup', 'MOS': 'Mostarda', 'CNS': 'Conservas (Milho, Ervilha)', 'PAL': 'Palmito', 'GEL': 'Gelatina', 'PUD': 'Pudim/Flan', 'CER': 'Cereal Matinal', 'ADO': 'Adoçante' } },
-        'PAD': { nome: 'Padaria', itens: { 'PAO': 'Pão de Forma', 'PFR': 'Pão Francês', 'BIS': 'Biscoito/Bolacha', 'TOR': 'Torrada', 'BOL': 'Bolo (pronto/mistura)', 'FER': 'Fermento', 'PQR': 'Pão de Queijo' } },
-        'ACO': { nome: 'Açougue (Carne Bovina/Suína)', itens: { 'BOV-MOI': 'Carne Moída', 'BOV-BIF': 'Bife', 'BOV-PIC': 'Picanha', 'BOV-ALC': 'Alcatra', 'BOV-COS': 'Costela Bovina', 'BOV-MUS': 'Músculo', 'SUI-LOM': 'Lombo Suíno', 'SUI-COS': 'Costela Suína', 'SUI-PER': 'Pernil', 'BAC': 'Bacon', 'LIN': 'Linguiça Toscana/Calabresa', 'SLS': 'Salsicha' } },
-        'AVE': { nome: 'Aves', itens: { 'FRA-PEI': 'Peito de Frango', 'FRA-FIL': 'Filé de Frango', 'FRA-COX': 'Coxa/Sobrecoxa', 'FRA-ASA': 'Asa/Asinha', 'FRA-INT': 'Frango Inteiro', 'FRA-PAS': 'Frango a Passarinho', 'OVO': 'Ovos' } },
-        'PEI': { nome: 'Peixaria', itens: { 'TIL': 'Filé de Tilápia', 'SAL': 'Salmão', 'MER': 'Merluza', 'CAM': 'Camarão', 'ATUM': 'Atum (Lata/Fresco)' } },
-        'FIA': { nome: 'Fiambreria', itens: { 'QJO-MUS': 'Queijo Mussarela', 'QJO-PRA': 'Queijo Prato', 'QJO-COA': 'Queijo Coalho', 'QJO-MIN': 'Queijo Minas', 'REQ': 'Requeijão', 'CCH': 'Cream Cheese', 'PRE': 'Presunto', 'PPU': 'Peito de Peru', 'SLM': 'Salame', 'MOR': 'Mortadela' } },
-        'LAT': { nome: 'Laticínios', itens: { 'LEI': 'Leite', 'IOG': 'Iogurte', 'MAN': 'Manteiga', 'MAR': 'Margarina', 'CRE': 'Creme de Leite', 'LCN': 'Leite Condensado' } },
-        'FVL': { nome: 'Hortifruti', itens: { 'ALF': 'Alface', 'RUC': 'Rúcula', 'COU': 'Couve', 'TOM': 'Tomate', 'CEB': 'Cebola', 'ALH': 'Alho', 'CEN': 'Cenoura', 'BAT': 'Batata', 'MDI': 'Mandioca', 'PIM': 'Pimentão', 'BAN': 'Banana', 'MCA': 'Maçã', 'LAR': 'Laranja', 'LIM': 'Limão', 'MAM': 'Mamão', 'UVA': 'Uva', 'MOR': 'Morango' } },
-        'BEB': { nome: 'Bebidas', itens: { 'AGM': 'Água Mineral', 'AGC': 'Água de Coco', 'REF': 'Refrigerante', 'SUC': 'Suco (Caixa/Pó)', 'IST': 'Isotônico', 'ENE': 'Energético', 'CER': 'Cerveja', 'VIN': 'Vinho' } },
-        'CNG': { nome: 'Congelados', itens: { 'PIZ': 'Pizza', 'LAS': 'Lasanha', 'HAM': 'Hambúrguer (caixa)', 'BFR': 'Batata Frita', 'LEG': 'Legumes Congelados', 'POL': 'Polpa de Fruta', 'SOR': 'Sorvete' } },
-        'LIM': { nome: 'Limpeza', itens: { 'SAP': 'Sabão em Pó/Líquido', 'AMA': 'Amaciante', 'DET': 'Detergente', 'AGS': 'Água Sanitária', 'DES': 'Desinfetante', 'MUL': 'Multiuso', 'ESP': 'Esponja de Aço/Sintética', 'SCL': 'Saco de Lixo', 'PPO': 'Pano de Prato/Chão' } },
-        'HIG': { nome: 'Higiene Pessoal', itens: { 'SAB': 'Sabonete', 'SHA': 'Shampoo', 'CND': 'Condicionador', 'PAS': 'Pasta de Dente', 'ESC': 'Escova de Dente', 'FIO': 'Fio Dental', 'DSD': 'Desodorante', 'PAP': 'Papel Higiênico', 'ABS': 'Absorvente' } },
+    // --- INTERNACIONALIZAÇÃO (i18n) ---
+    const translations = {
+        pt: {
+            mainTitle: "Meu Controle de Mercado", mainSubtitle: "Suas compras, organizadas.",
+            budgetTitle: "Orçamento", setBudgetLabel: "Definir Orçamento (R$)", totalSpentLabel: "Total Gasto", balanceLabel: "Saldo",
+            addExpenseTitle: "Adicionar Gasto", addExpenseBtn: "Adicionar Gasto",
+            expensesActionsTitle: "Ações dos Gastos", exportBtn: "Exportar", importBtn: "Importar",
+            expensesListTab: "Lista de Gastos", spendAnalysisTab: "Análise de Gastos", shoppingListTab: "Lista de Compras",
+            spendAnalysisTitle: "Gastos por Categoria",
+            planShoppingListTitle: "Planejar Lista de Compras", productColumn: "Produto", haveColumn: "Tenho", idealColumn: "Ideal", buyColumn: "Comprar",
+            accessibilityTitle: "Acessibilidade:", darkModeBtn: "Escuro", contrastModeBtn: "Contraste", increaseFontBtn: "Aumentar Fonte",
+            privacyModalTitle: "Sua Privacidade em Primeiro Lugar!", privacyModalDesc: "Este site funciona 100% no seu navegador. <strong>Nenhum dado é coletado ou enviado para servidores.</strong>",
+            privacyModalImportant: "Importante:", privacyModalImportantDesc: 'Como tudo é salvo localmente, lembre-se de <strong>exportar seus dados</strong> (botão "Exportar") para não perdê-los. Você pode importá-los de volta a qualquer momento.',
+            privacyModalBtn: "Entendi, começar a usar!",
+            stockModalTitle: "Planeje sua Lista de Compras!", stockModalDesc: 'Use esta aba para controlar o que você tem em casa e saber exatamente o que precisa comprar. Preencha as colunas "Tenho" e "Ideal" para cada item e nós calculamos o resto!',
+            stockModalBtn: "Entendi!",
+            deleteModalTitle: "Confirmar Exclusão", deleteModalDesc: "Tem certeza que deseja remover este item? Esta ação não pode ser desfeita.",
+            cancelBtn: "Cancelar", confirmDeleteBtn: "Sim, remover",
+            emptyExpensesList: "Sua lista de gastos está vazia.", emptyAnalysis: "Adicione gastos para ver a análise.",
+            addAnotherItem: "Adicionar Outro Item", specifyItemPlaceholder: "Especifique o item", quantityPlaceholder: "Qtde.", unitPricePlaceholder: "Preço Unit. (R$)",
+            selectCategoryPlaceholder: "Selecione uma categoria", selectItemPlaceholder: "Selecione o item", otherItemInCategory: "Outro item nesta categoria", otherCategory: "Outra Categoria",
+        },
+        en: {
+            mainTitle: "My Grocery Control", mainSubtitle: "Your groceries, organized.",
+            budgetTitle: "Budget", setBudgetLabel: "Set Budget ($)", totalSpentLabel: "Total Spent", balanceLabel: "Balance",
+            addExpenseTitle: "Add Expense", addExpenseBtn: "Add Expense",
+            expensesActionsTitle: "Expenses Actions", exportBtn: "Export", importBtn: "Import",
+            expensesListTab: "Expenses List", spendAnalysisTab: "Spending Analysis", shoppingListTab: "Shopping List",
+            spendAnalysisTitle: "Spending by Category",
+            planShoppingListTitle: "Plan Shopping List", productColumn: "Product", haveColumn: "Have", idealColumn: "Ideal", buyColumn: "To Buy",
+            accessibilityTitle: "Accessibility:", darkModeBtn: "Dark", contrastModeBtn: "Contrast", increaseFontBtn: "Increase Font",
+            privacyModalTitle: "Your Privacy First!", privacyModalDesc: "This site runs 100% in your browser. <strong>No data is collected or sent to servers.</strong>",
+            privacyModalImportant: "Important:", privacyModalImportantDesc: 'As everything is saved locally, remember to <strong>export your data</strong> ("Export" button) to avoid losing it. You can import it back at any time.',
+            privacyModalBtn: "Got it, start using!",
+            stockModalTitle: "Plan Your Shopping List!", stockModalDesc: 'Use this tab to control what you have at home and know exactly what you need to buy. Fill in the "Have" and "Ideal" columns for each item and we calculate the rest!',
+            stockModalBtn: "Got it!",
+            deleteModalTitle: "Confirm Deletion", deleteModalDesc: "Are you sure you want to remove this item? This action cannot be undone.",
+            cancelBtn: "Cancel", confirmDeleteBtn: "Yes, remove",
+            emptyExpensesList: "Your expenses list is empty.", emptyAnalysis: "Add expenses to see the analysis.",
+            addAnotherItem: "Add Another Item", specifyItemPlaceholder: "Specify the item", quantityPlaceholder: "Qty.", unitPricePlaceholder: "Unit Price ($)",
+            selectCategoryPlaceholder: "Select a category", selectItemPlaceholder: "Select the item", otherItemInCategory: "Other item in this category", otherCategory: "Other Category",
+        },
+        es: {
+            mainTitle: "Mi Control de Supermercado", mainSubtitle: "Tus compras, organizadas.",
+            budgetTitle: "Presupuesto", setBudgetLabel: "Definir Presupuesto ($)", totalSpentLabel: "Total Gastado", balanceLabel: "Saldo",
+            addExpenseTitle: "Añadir Gasto", addExpenseBtn: "Añadir Gasto",
+            expensesActionsTitle: "Acciones de Gastos", exportBtn: "Exportar", importBtn: "Importar",
+            expensesListTab: "Lista de Gastos", spendAnalysisTab: "Análisis de Gastos", shoppingListTab: "Lista de Compras",
+            spendAnalysisTitle: "Gastos por Categoría",
+            planShoppingListTitle: "Planificar Lista de Compras", productColumn: "Producto", haveColumn: "Tengo", idealColumn: "Ideal", buyColumn: "Comprar",
+            accessibilityTitle: "Accesibilidad:", darkModeBtn: "Oscuro", contrastModeBtn: "Contraste", increaseFontBtn: "Aumentar Fuente",
+            privacyModalTitle: "¡Tu Privacidad Primero!", privacyModalDesc: "Este sitio funciona 100% en tu navegador. <strong>No se recopilan ni se envían datos a servidores.</strong>",
+            privacyModalImportant: "Importante:", privacyModalImportantDesc: 'Como todo se guarda localmente, recuerda <strong>exportar tus datos</strong> (botón "Exportar") para no perderlos. Puedes importarlos de nuevo en cualquier momento.',
+            privacyModalBtn: "¡Entendido, a usar!",
+            stockModalTitle: "¡Planifica tu Lista de Compras!", stockModalDesc: 'Usa esta pestaña para controlar lo que tienes en casa y saber exactamente qué necesitas comprar. Rellena las columnas "Tengo" e "Ideal" para cada artículo y nosotros calculamos el resto.',
+            stockModalBtn: "¡Entendido!",
+            deleteModalTitle: "Confirmar Eliminación", deleteModalDesc: "¿Estás seguro de que quieres eliminar este artículo? Esta acción no se puede deshacer.",
+            cancelBtn: "Cancelar", confirmDeleteBtn: "Sí, eliminar",
+            emptyExpensesList: "Tu lista de gastos está vacía.", emptyAnalysis: "Añade gastos para ver el análisis.",
+            addAnotherItem: "Añadir Otro Artículo", specifyItemPlaceholder: "Especifique el artículo", quantityPlaceholder: "Cant.", unitPricePlaceholder: "Precio Unit. ($)",
+            selectCategoryPlaceholder: "Seleccione una categoría", selectItemPlaceholder: "Seleccione el artículo", otherItemInCategory: "Otro artículo en esta categoría", otherCategory: "Otra Categoría",
+        }
     };
 
+    // --- CATEGORIAS COM TRADUÇÃO ---
+    const categorias = {
+        'MER': { nome: {pt: 'Mercearia/Despensa', en: 'Pantry/Grocery', es: 'Despensa/Abarrotes'}, itens: { 'ARR': {pt:'Arroz', en:'Rice', es:'Arroz'}, 'FEJ': {pt:'Feijão', en:'Beans', es:'Frijoles'}, 'MAC': {pt:'Macarrão', en:'Pasta', es:'Pasta'} /* ... etc */ } },
+        'PAD': { nome: {pt: 'Padaria', en: 'Bakery', es: 'Panadería'}, itens: { 'PAO': {pt:'Pão de Forma', en:'Sliced Bread', es:'Pan de Molde'}, 'PFR': {pt:'Pão Francês', en:'Baguette', es:'Baguette'} /* ... etc */ } },
+        'ACO': { nome: {pt: 'Açougue (Carne Bovina/Suína)', en: 'Butcher (Beef/Pork)', es: 'Carnicería (Res/Cerdo)'}, itens: { 'BOV-MOI': {pt:'Carne Moída', en:'Ground Beef', es:'Carne Molida'} /* ... etc */ } },
+        'AVE': { nome: {pt: 'Aves', en: 'Poultry', es: 'Aves'}, itens: { 'FRA-PEI': {pt:'Peito de Frango', en:'Chicken Breast', es:'Pechuga de Pollo'} /* ... etc */ } },
+        'PEI': { nome: {pt: 'Peixaria', en: 'Fish Market', es: 'Pescadería'}, itens: { 'TIL': {pt:'Filé de Tilápia', en:'Tilapia Fillet', es:'Filete de Tilapia'} /* ... etc */ } },
+        'FIA': { nome: {pt: 'Fiambreria', en: 'Deli', es: 'Fiambrería'}, itens: { 'QJO-MUS': {pt:'Queijo Mussarela', en:'Mozzarella Cheese', es:'Queso Mozzarella'} /* ... etc */ } },
+        'LAT': { nome: {pt: 'Laticínios', en: 'Dairy', es: 'Lácteos'}, itens: { 'LEI': {pt:'Leite', en:'Milk', es:'Leche'} /* ... etc */ } },
+        'FVL': { nome: {pt: 'Hortifruti', en: 'Fruits & Vegetables', es: 'Frutas y Verduras'}, itens: { 'ALF': {pt:'Alface', en:'Lettuce', es:'Lechuga'} /* ... etc */ } },
+        'BEB': { nome: {pt: 'Bebidas', en: 'Beverages', es: 'Bebidas'}, itens: { 'AGM': {pt:'Água Mineral', en:'Mineral Water', es:'Agua Mineral'} /* ... etc */ } },
+        'CNG': { nome: {pt: 'Congelados', en: 'Frozen Foods', es: 'Congelados'}, itens: { 'PIZ': {pt:'Pizza', en:'Pizza', es:'Pizza'} /* ... etc */ } },
+        'LIM': { nome: {pt: 'Limpeza', en: 'Cleaning', es: 'Limpieza'}, itens: { 'SAP': {pt:'Sabão em Pó/Líquido', en:'Laundry Detergent', es:'Detergente para Ropa'} /* ... etc */ } },
+        'HIG': { nome: {pt: 'Higiene Pessoal', en: 'Personal Care', es: 'Cuidado Personal'}, itens: { 'SAB': {pt:'Sabonete', en:'Soap', es:'Jabón'} /* ... etc */ } },
+    };
+
+
     // --- ESTADO DA APLICAÇÃO ---
+    let currentLanguage = 'pt';
     let listaDeCompras = [];
-    let stockData = {}; // Novo estado para os dados do estoque
+    let stockData = {};
     let budget = 0;
     let userSettings = {};
     let itemParaDeletar = null;
 
     // --- FUNÇÕES DE INICIALIZAÇÃO E RENDERIZAÇÃO ---
-    function carregarDados() {
-        listaDeCompras = JSON.parse(localStorage.getItem('listaDeCompras_v7')) || [];
-        stockData = JSON.parse(localStorage.getItem('stockData_v1')) || {};
-        budget = parseFloat(localStorage.getItem('budget_v7')) || 0;
-        userSettings = JSON.parse(localStorage.getItem('userSettings_v1')) || {};
+    function setLanguage(lang) {
+        currentLanguage = lang;
+        userSettings.language = lang;
+        document.documentElement.lang = lang;
+
+        // Atualiza todos os textos estáticos
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.dataset.i18n;
+            el.innerHTML = translations[lang][key] || el.innerHTML;
+        });
+
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.dataset.i18nPlaceholder;
+            el.placeholder = translations[lang][key] || el.placeholder;
+        });
         
+        // Atualiza a classe ativa nos botões de idioma
+        document.querySelectorAll('.lang-option').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+
+        // Re-renderiza conteúdo dinâmico com a nova língua
+        popularCategoriasPrincipais();
+        renderizarTudo();
+        renderizarTabelaEstoque();
+        salvarDados();
+    }
+    
+    function carregarDados() {
+        listaDeCompras = JSON.parse(localStorage.getItem('listaDeCompras_v8')) || [];
+        stockData = JSON.parse(localStorage.getItem('stockData_v2')) || {};
+        budget = parseFloat(localStorage.getItem('budget_v8')) || 0;
+        userSettings = JSON.parse(localStorage.getItem('userSettings_v2')) || {};
+        
+        setLanguage(userSettings.language || 'pt');
+
         if (budget > 0) budgetInput.value = budget.toFixed(2);
         
         if (!localStorage.getItem('privacyNoticeShown_v1')) {
@@ -393,9 +512,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         aplicarConfiguracoes();
-        popularCategoriasPrincipais();
-        renderizarTudo();
-        renderizarTabelaEstoque();
     }
     
     function aplicarConfiguracoes() {
@@ -421,10 +537,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function salvarDados() {
-        localStorage.setItem('listaDeCompras_v7', JSON.stringify(listaDeCompras));
-        localStorage.setItem('stockData_v1', JSON.stringify(stockData));
-        localStorage.setItem('budget_v7', budget.toString());
-        localStorage.setItem('userSettings_v1', JSON.stringify(userSettings));
+        localStorage.setItem('listaDeCompras_v8', JSON.stringify(listaDeCompras));
+        localStorage.setItem('stockData_v2', JSON.stringify(stockData));
+        localStorage.setItem('budget_v8', budget.toString());
+        localStorage.setItem('userSettings_v2', JSON.stringify(userSettings));
     }
     
     function renderizarTudo() {
@@ -435,20 +551,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function popularCategoriasPrincipais() {
-        catPrincipalSelect.innerHTML = '<option value="">Selecione uma categoria</option>';
-        Object.keys(categorias).forEach(codigo => catPrincipalSelect.add(new Option(categorias[codigo].nome, codigo)));
-        catPrincipalSelect.add(new Option('Outra Categoria', 'OUT'));
+        catPrincipalSelect.innerHTML = `<option value="">${translations[currentLanguage].selectCategoryPlaceholder}</option>`;
+        Object.keys(categorias).forEach(codigo => catPrincipalSelect.add(new Option(categorias[codigo].nome[currentLanguage], codigo)));
+        catPrincipalSelect.add(new Option(translations[currentLanguage].otherCategory, 'OUT'));
     }
 
     function popularCategoriasSecundarias() {
         const catPrincipalCod = catPrincipalSelect.value;
-        catSecundariaSelect.innerHTML = '<option value="">Selecione o item</option>';
+        catSecundariaSelect.innerHTML = `<option value="">${translations[currentLanguage].selectItemPlaceholder}</option>`;
         outroItemInput.classList.add('hidden');
         if (catPrincipalCod && categorias[catPrincipalCod]) {
             catSecundariaSelect.classList.remove('hidden');
             const subcategorias = categorias[catPrincipalCod].itens;
-            Object.keys(subcategorias).forEach(cod => catSecundariaSelect.add(new Option(subcategorias[cod], cod)));
-            catSecundariaSelect.add(new Option('Outro item nesta categoria', 'OUT'));
+            Object.keys(subcategorias).forEach(cod => catSecundariaSelect.add(new Option(subcategorias[cod][currentLanguage], cod)));
+            catSecundariaSelect.add(new Option(translations[currentLanguage].otherItemInCategory, 'OUT'));
         } else if (catPrincipalCod === 'OUT') {
             catSecundariaSelect.classList.add('hidden');
             outroItemInput.classList.remove('hidden');
@@ -460,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderizarLista() {
         listaItensContainer.innerHTML = '';
         if (listaDeCompras.length === 0) {
-            listaItensContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="shopping-bag" class="w-16 h-16"></i><p>Sua lista de gastos está vazia.</p></div>`;
+            listaItensContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="shopping-bag" class="w-16 h-16"></i><p>${translations[currentLanguage].emptyExpensesList}</p></div>`;
             return;
         }
         const frag = document.createDocumentFragment();
@@ -491,12 +607,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderizarAnalise() {
         analiseContainer.innerHTML = '';
         if (listaDeCompras.length === 0) {
-            analiseContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="bar-chart-2" class="w-16 h-16"></i><p>Adicione gastos para ver a análise.</p></div>`;
+            analiseContainer.innerHTML = `<div class="text-center py-16 flex flex-col items-center gap-4" style="color: var(--text-secondary);"><i data-feather="bar-chart-2" class="w-16 h-16"></i><p>${translations[currentLanguage].emptyAnalysis}</p></div>`;
             return;
         }
         const gastosPorCategoria = listaDeCompras.reduce((acc, item) => {
             const catCod = item.codigo.split('-')[0];
-            const nomeCat = categorias[catCod] ? categorias[catCod].nome : 'Outros';
+            const nomeCat = categorias[catCod] ? categorias[catCod].nome[currentLanguage] : 'Outros';
             if (!acc[nomeCat]) acc[nomeCat] = 0;
             acc[nomeCat] += (item.preco * item.quantidade);
             return acc;
@@ -527,41 +643,27 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const catCode in categorias) {
             const categoria = categorias[catCode];
             const catHeader = document.createElement('tr');
-            catHeader.innerHTML = `<td colspan="4" class="p-2 font-bold text-lg" style="color: var(--text-headings); border-bottom: 2px solid; border-color: var(--accent-color);">${categoria.nome}</td>`;
+            catHeader.innerHTML = `<td colspan="4" class="p-2 font-bold text-lg" style="color: var(--text-headings); border-bottom: 2px solid; border-color: var(--accent-color);">${categoria.nome[currentLanguage]}</td>`;
             frag.appendChild(catHeader);
 
             for (const itemCode in categoria.itens) {
                 const fullCode = `${catCode}-${itemCode}`;
-                const itemName = categoria.itens[itemCode];
+                const itemName = categoria.itens[itemCode][currentLanguage];
                 const itemData = stockData[fullCode] || { tenho: 0, ideal: 0 };
-                
                 const toBuy = Math.max(0, itemData.ideal - itemData.tenho);
+                let bgColor = toBuy > 0 ? `color-mix(in srgb, var(--accent-color) 15%, transparent)` : 'transparent';
 
                 const itemRow = document.createElement('tr');
                 itemRow.className = 'border-b';
                 itemRow.style.borderColor = 'var(--border-color)';
-                
-                let bgColor = 'transparent';
-                if (toBuy > 0) {
-                     bgColor = `color-mix(in srgb, var(--accent-color) 15%, transparent)`;
-                }
-
                 itemRow.innerHTML = `
                     <td class="p-2">${itemName}</td>
-                    <td class="p-2 text-center">
-                        <input type="number" min="0" value="${itemData.tenho}" data-code="${fullCode}" data-type="tenho" class="input-field stock-input">
-                    </td>
-                    <td class="p-2 text-center">
-                        <input type="number" min="0" value="${itemData.ideal}" data-code="${fullCode}" data-type="ideal" class="input-field stock-input">
-                    </td>
-                    <td class="p-2 text-center font-bold" style="background-color: ${bgColor};">
-                        <span data-code="${fullCode}-tobuy">${toBuy}</span>
-                    </td>
-                `;
+                    <td class="p-2 text-center"><input type="number" min="0" value="${itemData.tenho}" data-code="${fullCode}" data-type="tenho" class="input-field stock-input"></td>
+                    <td class="p-2 text-center"><input type="number" min="0" value="${itemData.ideal}" data-code="${fullCode}" data-type="ideal" class="input-field stock-input"></td>
+                    <td class="p-2 text-center font-bold" style="background-color: ${bgColor};"><span data-code="${fullCode}-tobuy">${toBuy}</span></td>`;
                 frag.appendChild(itemRow);
             }
             
-            // Renderizar itens customizados para esta categoria
             Object.keys(stockData).filter(key => key.startsWith(`CUSTOM-${catCode}`)).forEach(customCode => {
                 const itemData = stockData[customCode];
                 const toBuy = Math.max(0, itemData.ideal - itemData.tenho);
@@ -571,27 +673,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 customRow.className = 'border-b';
                 customRow.style.borderColor = 'var(--border-color)';
                 customRow.innerHTML = `
-                     <td class="p-2">
-                        <input type="text" value="${itemData.name}" data-code="${customCode}" data-type="name" class="input-field custom-stock-name-input">
-                     </td>
-                     <td class="p-2 text-center">
-                        <input type="number" min="0" value="${itemData.tenho}" data-code="${customCode}" data-type="tenho" class="input-field stock-input">
-                    </td>
-                    <td class="p-2 text-center">
-                        <input type="number" min="0" value="${itemData.ideal}" data-code="${customCode}" data-type="ideal" class="input-field stock-input">
-                    </td>
-                    <td class="p-2 text-center font-bold" style="background-color: ${bgColor};">
-                        <span data-code="${customCode}-tobuy">${toBuy}</span>
-                    </td>
-                `;
+                     <td class="p-2"><input type="text" value="${itemData.name}" data-code="${customCode}" data-type="name" class="input-field custom-stock-name-input"></td>
+                     <td class="p-2 text-center"><input type="number" min="0" value="${itemData.tenho}" data-code="${customCode}" data-type="tenho" class="input-field stock-input"></td>
+                    <td class="p-2 text-center"><input type="number" min="0" value="${itemData.ideal}" data-code="${customCode}" data-type="ideal" class="input-field stock-input"></td>
+                    <td class="p-2 text-center font-bold" style="background-color: ${bgColor};"><span data-code="${customCode}-tobuy">${toBuy}</span></td>`;
                 frag.appendChild(customRow);
             });
 
-            // Adicionar botão "Outro"
             const addRow = document.createElement('tr');
-            addRow.innerHTML = `<td colspan="4" class="p-2"><button data-cat-code="${catCode}" class="btn-add-custom-stock text-sm w-full flex items-center justify-center p-2 rounded-lg" style="color: var(--text-secondary);"><i data-feather="plus" class="w-4 h-4 mr-1"></i> Adicionar Outro Item</button></td>`;
+            addRow.innerHTML = `<td colspan="4" class="p-2"><button data-cat-code="${catCode}" class="btn-add-custom-stock text-sm w-full flex items-center justify-center p-2 rounded-lg" style="color: var(--text-secondary);"><i data-feather="plus" class="w-4 h-4 mr-1"></i> <span data-i18n="addAnotherItem"></span></button></td>`;
             frag.appendChild(addRow);
-
         }
         stockTableBody.appendChild(frag);
         feather.replace();
@@ -652,7 +743,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!outroNome) { alert('Especifique o nome do item.'); return; }
             nomeItem = outroNome; codigoFinal = `${catPrincipalCod}-OUT`;
         } else if(catSecundariaCod) {
-            nomeItem = categorias[catPrincipalCod].itens[catSecundariaCod];
+            nomeItem = categorias[catPrincipalCod].itens[catSecundariaCod][currentLanguage];
             codigoFinal = `${catPrincipalCod}-${catSecundariaCod}`;
         } else { alert('Selecione um item ou especifique um novo.'); return; }
         listaDeCompras.push({ id: Date.now(), codigo: codigoFinal, nome: nomeItem, preco: preco, quantidade: quantidade });
@@ -665,7 +756,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderizarTudo(); salvarDados();
     }
     
-    // --- FUNÇÕES DE MODAL ---
     function showModal(modalElement) {
         modalElement.classList.add('visible');
         feather.replace();
@@ -675,7 +765,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modalElement.classList.remove('visible');
     }
 
-    // --- FUNÇÕES DE IMPORT/EXPORT ---
     function exportarParaCSV(data, filename) {
         let isStock = filename.includes('estoque');
         
@@ -684,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const catCode in categorias) {
                 for(const itemCode in categorias[catCode].itens) {
                     const fullCode = `${catCode}-${itemCode}`;
-                    const name = categorias[catCode].itens[itemCode];
+                    const name = categorias[catCode].itens[itemCode][currentLanguage];
                     const itemData = data[fullCode] || { tenho: 0, ideal: 0 };
                     allItems.push({ code: fullCode, name: name, tenho: itemData.tenho, ideal: itemData.ideal });
                 }
@@ -749,16 +838,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const code = cols[0];
                     if (code) {
                         if(code.startsWith('CUSTOM-')){
-                            newStockData[code] = {
-                                name: cols[1],
-                                tenho: parseFloat(cols[2]) || 0,
-                                ideal: parseFloat(cols[3]) || 0
-                            };
+                            newStockData[code] = { name: cols[1], tenho: parseFloat(cols[2]) || 0, ideal: parseFloat(cols[3]) || 0 };
                         } else {
-                             newStockData[code] = {
-                                tenho: parseFloat(cols[2]) || 0,
-                                ideal: parseFloat(cols[3]) || 0
-                            };
+                             newStockData[code] = { tenho: parseFloat(cols[2]) || 0, ideal: parseFloat(cols[3]) || 0 };
                         }
                     }
                 });
@@ -766,12 +848,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderizarTabelaEstoque();
                 salvarDados();
                 alert('Dados de estoque importados com sucesso!');
-            } catch (error) {
-                alert('Ocorreu um erro ao importar o arquivo de estoque.');
-            }
+            } catch (error) { alert('Ocorreu um erro ao importar o arquivo de estoque.'); }
         };
-        reader.readAsText(file);
-        stockImportInput.value = '';
+        reader.readAsText(file); stockImportInput.value = '';
     }
 
 
@@ -783,13 +862,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     listaItensContainer.addEventListener('click', (e) => {
         const deleteButton = e.target.closest('.btn-deletar');
-        if (deleteButton) {
-            itemParaDeletar = parseInt(deleteButton.dataset.id);
-            showModal(deleteConfirmModal);
-        }
+        if (deleteButton) { itemParaDeletar = parseInt(deleteButton.dataset.id); showModal(deleteConfirmModal); }
     });
 
-    // Listeners das Abas
     const tabs = [tabListaBtn, tabAnaliseBtn, tabEstoqueBtn];
     const views = [viewLista, viewAnalise, viewEstoque];
     tabs.forEach((tab, index) => {
@@ -798,7 +873,6 @@ document.addEventListener('DOMContentLoaded', () => {
             views.forEach(v => v.classList.add('hidden'));
             tab.classList.add('active');
             views[index].classList.remove('hidden');
-
             if (tab === tabEstoqueBtn && !sessionStorage.getItem('stockInfoShown')) {
                 showModal(stockInfoModal);
                 sessionStorage.setItem('stockInfoShown', 'true');
@@ -810,46 +884,30 @@ document.addEventListener('DOMContentLoaded', () => {
     importarBtn.addEventListener('click', () => importarInput.click());
     importarInput.addEventListener('change', processarImportacaoCompras);
     
-    // Listeners de Acessibilidade
     btnDarkMode.addEventListener('click', () => { userSettings.theme = userSettings.theme === 'dark' ? 'light' : 'dark'; aplicarConfiguracoes(); salvarDados(); });
     btnHighContrast.addEventListener('click', () => { userSettings.theme = userSettings.theme === 'high-contrast' ? 'light' : 'high-contrast'; aplicarConfiguracoes(); salvarDados(); });
     btnFontIncrease.addEventListener('click', () => { userSettings.fontSize = userSettings.fontSize === 'large' ? 'normal' : 'large'; aplicarConfiguracoes(); salvarDados(); });
     
-    // Listeners do Modal
-    modalCloseBtn.addEventListener('click', () => {
-        hideModal(privacyModal);
-        localStorage.setItem('privacyNoticeShown_v1', 'true');
-    });
+    modalCloseBtn.addEventListener('click', () => { hideModal(privacyModal); localStorage.setItem('privacyNoticeShown_v1', 'true'); });
     stockModalCloseBtn.addEventListener('click', () => hideModal(stockInfoModal));
-    deleteCancelBtn.addEventListener('click', () => {
-        hideModal(deleteConfirmModal);
-        itemParaDeletar = null;
-    });
+    deleteCancelBtn.addEventListener('click', () => { hideModal(deleteConfirmModal); itemParaDeletar = null; });
     deleteConfirmBtn.addEventListener('click', () => {
-        if(itemParaDeletar !== null) {
-            deletarItem(itemParaDeletar);
-            itemParaDeletar = null;
-        }
+        if(itemParaDeletar !== null) { deletarItem(itemParaDeletar); itemParaDeletar = null; }
         hideModal(deleteConfirmModal);
     });
     
-    // Listeners do Estoque
     stockTableBody.addEventListener('input', (e) => {
         if (e.target.classList.contains('stock-input') || e.target.classList.contains('custom-stock-name-input')) {
-            const code = e.target.dataset.code;
-            const type = e.target.dataset.type;
-            const value = e.target.value;
-            atualizarTabelaEstoque(code, type, value);
+            atualizarTabelaEstoque(e.target.dataset.code, e.target.dataset.type, e.target.value);
         }
     });
-
      stockTableBody.addEventListener('click', (e) => {
         const addButton = e.target.closest('.btn-add-custom-stock');
         if (addButton) {
             const catCode = addButton.dataset.catCode;
             const newCode = `CUSTOM-${catCode}-${Date.now()}`;
             stockData[newCode] = { name: '', tenho: 0, ideal: 0 };
-            renderizarTabelaEstoque(); // Re-render a tabela para adicionar a nova linha
+            renderizarTabelaEstoque();
             salvarDados();
         }
     });
@@ -858,7 +916,13 @@ document.addEventListener('DOMContentLoaded', () => {
     stockExportBtn.addEventListener('click', () => exportarParaCSV(stockData, `estoque_${new Date().toISOString().split('T')[0]}.csv`));
     stockImportBtn.addEventListener('click', () => stockImportInput.click());
     stockImportInput.addEventListener('change', processarImportacaoEstoque);
-
+    
+    document.querySelectorAll('.lang-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.preventDefault();
+            setLanguage(e.currentTarget.dataset.lang);
+        });
+    });
 
     // --- CARREGAMENTO INICIAL ---
     carregarDados();
@@ -867,4 +931,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-" of the docume
