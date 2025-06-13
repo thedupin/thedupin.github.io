@@ -88,7 +88,7 @@
         .btn-access { background-color: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); font-size: 0.875rem; padding: 0.5rem 1rem; }
         .btn-access.active { background-color: var(--accent-color); color: white; border-color: var(--accent-color); }
         
-        /* MUDANÇA: Novo estilo para os botões de navegação */
+        /* Novo estilo para os botões de navegação */
         .tab-button {
             padding: 0.5rem 1rem;
             border-radius: 9999px; /* pill shape */
@@ -121,6 +121,9 @@
         .stock-input {
             width: 80px;
             text-align: center;
+        }
+        .custom-stock-name-input {
+            width: 100%;
         }
         
         /* Esconde scrollbar */
@@ -214,7 +217,6 @@
             <div class="section-card">
                 <div class="p-2 rounded-full mb-4" style="background-color: var(--bg-secondary);" id="main-nav">
                     <div class="flex items-center justify-start gap-2">
-                        <!-- MUDANÇA: Nomes das abas atualizados -->
                         <button id="tab-lista" class="tab-button active">Lista de Gastos</button>
                         <button id="tab-analise" class="tab-button">Análise de Gastos</button>
                         <button id="tab-estoque" class="tab-button">Lista de Compras</button>
@@ -226,7 +228,6 @@
                          <h3 class="text-lg font-semibold mb-4" style="color: var(--text-headings);">Gastos por Categoria</h3>
                          <div id="analise-container" class="flex flex-col gap-4"></div>
                     </div>
-                    <!-- Aba de Estoque / Lista de Compras -->
                     <div id="view-estoque" class="hidden">
                          <div id="stock-actions" class="flex justify-between items-center mb-4">
                              <h3 class="text-lg font-semibold" style="color: var(--text-headings);">Planejar Lista de Compras</h3>
@@ -247,9 +248,7 @@
                                         <th class="p-2 font-semibold text-center">Comprar</th>
                                     </tr>
                                 </thead>
-                                <tbody id="stock-table-body">
-                                    <!-- Linhas da tabela serão geradas aqui -->
-                                </tbody>
+                                <tbody id="stock-table-body"></tbody>
                             </table>
                          </div>
                     </div>
@@ -291,7 +290,6 @@
         <div class="modal-content section-card z-10 w-full max-w-md transform scale-95 opacity-0">
             <div class="flex flex-col items-center text-center">
                 <i data-feather="archive" class="w-16 h-16 mb-4 text-green-500"></i>
-                <!-- MUDANÇA: Título do modal atualizado -->
                 <h2 class="text-2xl font-bold mb-3" style="color: var(--text-headings);">Planeje sua Lista de Compras!</h2>
                 <p class="mb-6" style="color: var(--text-secondary);">Use esta aba para controlar o que você tem em casa e saber exatamente o que precisa comprar. Preencha as colunas "Tenho" e "Ideal" para cada item e nós calculamos o resto!</p>
                 <button id="stock-modal-close-btn" class="btn btn-primary w-full">Entendi!</button>
@@ -561,25 +559,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 frag.appendChild(itemRow);
             }
+            
+            // Renderizar itens customizados para esta categoria
+            Object.keys(stockData).filter(key => key.startsWith(`CUSTOM-${catCode}`)).forEach(customCode => {
+                const itemData = stockData[customCode];
+                const toBuy = Math.max(0, itemData.ideal - itemData.tenho);
+                let bgColor = toBuy > 0 ? `color-mix(in srgb, var(--accent-color) 15%, transparent)` : 'transparent';
+
+                const customRow = document.createElement('tr');
+                customRow.className = 'border-b';
+                customRow.style.borderColor = 'var(--border-color)';
+                customRow.innerHTML = `
+                     <td class="p-2">
+                        <input type="text" value="${itemData.name}" data-code="${customCode}" data-type="name" class="input-field custom-stock-name-input">
+                     </td>
+                     <td class="p-2 text-center">
+                        <input type="number" min="0" value="${itemData.tenho}" data-code="${customCode}" data-type="tenho" class="input-field stock-input">
+                    </td>
+                    <td class="p-2 text-center">
+                        <input type="number" min="0" value="${itemData.ideal}" data-code="${customCode}" data-type="ideal" class="input-field stock-input">
+                    </td>
+                    <td class="p-2 text-center font-bold" style="background-color: ${bgColor};">
+                        <span data-code="${customCode}-tobuy">${toBuy}</span>
+                    </td>
+                `;
+                frag.appendChild(customRow);
+            });
+
+            // Adicionar botão "Outro"
+            const addRow = document.createElement('tr');
+            addRow.innerHTML = `<td colspan="4" class="p-2"><button data-cat-code="${catCode}" class="btn-add-custom-stock text-sm w-full flex items-center justify-center p-2 rounded-lg" style="color: var(--text-secondary);"><i data-feather="plus" class="w-4 h-4 mr-1"></i> Adicionar Outro Item</button></td>`;
+            frag.appendChild(addRow);
+
         }
         stockTableBody.appendChild(frag);
+        feather.replace();
     }
     
-    function atualizarTabelaEstoque(code) {
-        const tenho = parseFloat(document.querySelector(`.stock-input[data-code="${code}"][data-type="tenho"]`).value) || 0;
-        const ideal = parseFloat(document.querySelector(`.stock-input[data-code="${code}"][data-type="ideal"]`).value) || 0;
-        const toBuyEl = document.querySelector(`span[data-code="${code}-tobuy"]`);
-        const toBuy = Math.max(0, ideal - tenho);
-        toBuyEl.textContent = toBuy;
+    function atualizarTabelaEstoque(code, type, value) {
+        if (!stockData[code]) {
+            stockData[code] = { name: '', tenho: 0, ideal: 0 };
+        }
         
-        const row = toBuyEl.closest('tr');
-        if (toBuy > 0) {
-            row.querySelector('td:last-child').style.backgroundColor = `color-mix(in srgb, var(--accent-color) 15%, transparent)`;
+        if (type === 'name') {
+            stockData[code][type] = value;
         } else {
-            row.querySelector('td:last-child').style.backgroundColor = 'transparent';
+            stockData[code][type] = parseFloat(value) || 0;
         }
 
-        stockData[code] = { tenho, ideal };
+        const tenho = stockData[code].tenho;
+        const ideal = stockData[code].ideal;
+        const toBuyEl = document.querySelector(`span[data-code="${code}-tobuy"]`);
+        if (toBuyEl) {
+            const toBuy = Math.max(0, ideal - tenho);
+            toBuyEl.textContent = toBuy;
+            
+            const row = toBuyEl.closest('tr');
+            if (row) {
+                const cell = row.querySelector('td:last-child');
+                 cell.style.backgroundColor = toBuy > 0 ? `color-mix(in srgb, var(--accent-color) 15%, transparent)` : 'transparent';
+            }
+        }
         salvarDados();
     }
 
@@ -637,17 +677,33 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNÇÕES DE IMPORT/EXPORT ---
     function exportarParaCSV(data, filename) {
         let isStock = filename.includes('estoque');
-        if (!isStock && data.length === 0) { alert('Não há dados para exportar.'); return; }
-        if (isStock && Object.keys(data).length === 0) { alert('Não há dados para exportar.'); return; }
         
+        let allItems = [];
+        if (isStock) {
+            for (const catCode in categorias) {
+                for(const itemCode in categorias[catCode].itens) {
+                    const fullCode = `${catCode}-${itemCode}`;
+                    const name = categorias[catCode].itens[itemCode];
+                    const itemData = data[fullCode] || { tenho: 0, ideal: 0 };
+                    allItems.push({ code: fullCode, name: name, tenho: itemData.tenho, ideal: itemData.ideal });
+                }
+            }
+            Object.keys(data).filter(key => key.startsWith('CUSTOM-')).forEach(customCode => {
+                 const itemData = data[customCode];
+                 allItems.push({ code: customCode, name: itemData.name, tenho: itemData.tenho, ideal: itemData.ideal });
+            });
+             if (allItems.length === 0) { alert('Não há dados para exportar.'); return; }
+        }
+
         let headers, rows;
 
-        if (filename.includes('compras')) {
+        if (!isStock) {
+            if (data.length === 0) { alert('Não há dados para exportar.'); return; }
             headers = 'ID,Codigo,Nome,PrecoUnitario,Quantidade,Data\n';
             rows = data.map(item => `${item.id},${item.codigo},"${item.nome.replace(/"/g, '""')}",${item.preco},${item.quantidade},${new Date(item.id).toISOString()}`).join('\n');
         } else { // Estoque
-            headers = 'Codigo,Tenho,Ideal\n';
-            rows = Object.entries(data).map(([code, values]) => `${code},${values.tenho},${values.ideal}`).join('\n');
+            headers = 'Codigo,Nome,Tenho,Ideal\n';
+            rows = allItems.map(item => `${item.code},"${item.name.replace(/"/g, '""')}",${item.tenho},${item.ideal}`).join('\n');
         }
 
         const csvContent = "\uFEFF" + headers + rows;
@@ -688,12 +744,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const rows = e.target.result.split('\n').slice(1);
                 const newStockData = {};
                 rows.filter(row => row.trim() !== '').forEach(row => {
-                    const [code, tenho, ideal] = row.split(',');
+                    const cols = row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g).map(col => col.replace(/"/g, ''));
+                    const code = cols[0];
                     if (code) {
-                        newStockData[code] = {
-                            tenho: parseFloat(tenho) || 0,
-                            ideal: parseFloat(ideal) || 0
-                        };
+                        if(code.startsWith('CUSTOM-')){
+                            newStockData[code] = {
+                                name: cols[1],
+                                tenho: parseFloat(cols[2]) || 0,
+                                ideal: parseFloat(cols[3]) || 0
+                            };
+                        } else {
+                             newStockData[code] = {
+                                tenho: parseFloat(cols[2]) || 0,
+                                ideal: parseFloat(cols[3]) || 0
+                            };
+                        }
                     }
                 });
                 stockData = newStockData;
@@ -769,9 +834,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Listeners do Estoque
     stockTableBody.addEventListener('input', (e) => {
-        if (e.target.classList.contains('stock-input')) {
+        if (e.target.classList.contains('stock-input') || e.target.classList.contains('custom-stock-name-input')) {
             const code = e.target.dataset.code;
-            atualizarTabelaEstoque(code);
+            const type = e.target.dataset.type;
+            const value = e.target.value;
+            atualizarTabelaEstoque(code, type, value);
+        }
+    });
+
+     stockTableBody.addEventListener('click', (e) => {
+        const addButton = e.target.closest('.btn-add-custom-stock');
+        if (addButton) {
+            const catCode = addButton.dataset.catCode;
+            const newCode = `CUSTOM-${catCode}-${Date.now()}`;
+            stockData[newCode] = { name: '', tenho: 0, ideal: 0 };
+            renderizarTabelaEstoque(); // Re-render a tabela para adicionar a nova linha
+            salvarDados();
         }
     });
 
@@ -787,4 +865,4 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 </body>
-</ht
+</html>
